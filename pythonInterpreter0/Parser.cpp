@@ -802,3 +802,149 @@ std::unique_ptr<ExprNode> Parser::atom() {
 
     return nullptr;
 }
+
+// std::unique_ptr<ArraySubscription>
+std::unique_ptr<ExprNode> Parser::subscription() {
+    // subscription -> ID `[` test `]`
+
+    std::string scope = "Parser::subscription()";
+
+    auto tok = lexer.getToken();
+
+    if ( !tok->isName() )
+        die(scope, "Expected `ID` instead got", tok);
+
+    std::string name = tok->getName();
+
+    tok = lexer.getToken();
+
+    if ( !tok->isOpenSquareBracket() )
+        die(scope, "Expected `[` instead got", tok);
+
+    auto testNode = test();
+
+    tok = lexer.getToken();
+
+    if ( !tok->isCloseSquareBracket() )
+        die(scope, "Expected `]` instead got", tok);
+
+    return std::make_unique<ArraySubscription> (
+        std::make_shared<Token>(),
+        name,
+        std::move(testNode)
+    );
+}
+
+//std::unique_ptr<ArrayInit>
+std::unique_ptr<ExprNode> Parser::array_init() {
+    // array_init -> `[` std::optional<TESTLIST> `]`
+
+    std::string scope = "Parser::array_init()";
+
+    auto tok = lexer.getToken();
+
+    if ( !tok->isOpenSquareBracket() )
+        die(scope, "Expected `[` instead got", tok);
+
+    tok = lexer.getToken();
+
+
+    if ( tok->isCloseBracket() ) {
+        //return empty array init
+        return std::make_unique<ArrayInit>(
+            std::make_shared<Token>(),
+            nullptr 
+        );
+    } 
+    
+    lexer.ungetToken();
+    auto tl = testlist();
+
+    tok = lexer.getToken();
+    if ( !tok->isCloseSquareBracket() )
+        die(scope, "Expected `]` instead got", tok);
+
+    return std::make_unique<ArrayInit>(
+        std::make_shared<Token>(), //Hooked up LL2
+        std::move(tl)
+    );
+
+}
+
+//std::unique_ptr<ArrayOperation>
+std::unique_ptr<ExprNode> Parser::array_ops() {
+    // WE NEED TO PASS THIS A TOKEN
+    // array_ops -> ID `.`  NREDACT`(` append | pop NREDACT`)` `(` std::opt testlist `)`
+    // The function evaluate will check if () has args based on append / pop
+
+    std::string scope = "Parser::array_ops()";
+
+    auto tok = lexer.getToken();
+
+    // if ( !tok->isName() ) { } //
+    // passed token no name
+
+    if ( !tok->isPeriod() ) 
+        die(scope, "Expected `.` instead got", tok);
+
+    tok = lexer.getToken();
+
+    if ( !(tok->isAppend() || tok->isPop()) )
+        die(scope, "Expected (`append` || `pop`) instead got", tok);
+
+    std::string action = tok->getKeyword();
+
+    tok = lexer.getToken();
+
+    if ( !tok->isOpenParen() )
+        die(scope, "Expected `(` instead got", tok);
+
+    auto test_args = test();
+
+    tok = lexer.getToken();
+    if ( !tok->isCloseParen() )
+        die(scope, "Expected `)` instead got", tok);
+
+    return std::make_unique<ArrayOperation> (
+        std::make_shared<Token>(),
+        "<ID>", // token will be passed in as this requires 2 lookaheads kooshesh broke rules
+        action, //keyword
+        std::move(test_args)
+    );
+
+}
+
+// std::unique_ptr<ArrayLength>
+std::unique_ptr<ExprNode> Parser::array_len() {
+    // `len` `(` ID `)`
+    
+    std::string scope = "Parser::array_len()";
+
+    auto tok = lexer.getToken();
+
+    if ( !tok->isLen() )
+        die(scope, "Expected `len` instead got", tok);
+
+    tok = lexer.getToken();
+
+    if ( !tok->isOpenParen() )
+        die(scope, "Expected `(` instead got", tok);
+
+    tok = lexer.getToken();
+
+    if ( !tok->isName() )
+        die(scope, "Expected `ID` instead got", tok);
+
+    std::string ID = tok->getName();
+
+    tok = lexer.getToken();
+
+    if ( !tok->isCloseParen() )
+        die(scope, "Expected `)` instead got", tok);
+
+    return std::make_unique<ArrayLength> (
+        std::make_shared<Token>(),
+        ID
+    );
+    // return nullptr
+}

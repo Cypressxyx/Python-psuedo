@@ -371,6 +371,88 @@ void FunctionCall::dumpAST(std::string indent) {
 }
 
 void FunctionCall::print() {}
-
-
 // End FunctionCall
+
+
+//START ArrayOperation
+ArrayOperation::ArrayOperation(
+    std::shared_ptr<Token> tk,
+    std::string id, 
+    std::string keyword, 
+    std::unique_ptr<ExprNode> test):
+    ExprNode{tk},
+    _id{id},
+    _keyword{keyword},
+    _test{std::move(test)}
+{}
+
+void ArrayOperation::dumpAST(std::string spaces) {
+    std::cout << spaces << "ArrayOperation ( " << _keyword << " ): " << _id << " "  << this << std::endl;
+    _test->dumpAST(spaces + "\t");
+}
+
+void ArrayOperation::print() {}
+
+std::unique_ptr<TypeDescriptor> ArrayOperation::evaluate(SymTab &symTab){ return nullptr;}
+//END ArrayOperation
+
+
+//START ArrayInit
+ArrayInit::ArrayInit(
+    std::shared_ptr<Token> tk,
+    std::unique_ptr<std::vector<std::unique_ptr<ExprNode>>> testList):
+    ExprNode{tk},
+    _testList{std::move(testList)}
+{}
+
+void ArrayInit::dumpAST(std::string spaces) {
+    std::cout << spaces << "ArrayInit: " << this << std::endl;
+    for_each(_testList->begin(), _testList->end(), [spaces](auto &test){
+        test->dumpAST(spaces + "\t");
+    });
+}
+
+void ArrayInit::print() {}
+
+std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
+    return nullptr;
+}
+//END ArrayInit
+
+// START ArraySubscription
+ArraySubscription::ArraySubscription(
+    std::shared_ptr<Token> tk,
+    std::string id, 
+    std::unique_ptr<ExprNode> test):
+    ExprNode{tk},
+    _id{id},
+    _test{std::move(test)}
+{}
+
+void ArraySubscription::dumpAST(std::string spaces) {
+    std::cout << spaces << "ArraySubscription: " << _id << " " << this << std::endl;
+    _test->dumpAST(spaces + "\t");
+}
+
+void ArraySubscription::print() {}
+
+std::unique_ptr<TypeDescriptor> ArraySubscription::evaluate(SymTab &symTab){
+    return nullptr;
+}
+// END ArraySubscription
+
+
+//Start ArrayLength
+ArrayLength::ArrayLength(std::shared_ptr<Token> tk, std::string id):
+    ExprNode{tk},
+    _id{id}
+{}
+
+void ArrayLength::dumpAST(std::string spaces) {
+    std::cout << "ArrayLength: " << _id << " " << this << std::endl;
+}
+
+void ArrayLength::print() {}
+
+std::unique_ptr<TypeDescriptor> ArrayLength::evaluate(SymTab &symTab) { return nullptr; }
+// END ArrayLength
