@@ -122,7 +122,7 @@ std::unique_ptr<TypeDescriptor> ComparisonExprNode::evaluate(SymTab &symTab) {
 
 void ComparisonExprNode::dumpAST(std::string space) {
 
-    std::cout << space << std::setw(15) << std::left << "ComparisonExprNode " << this << "\tToken";
+    std::cout << space << std::setw(15) << std::left << "ComparisonExprNode " << this << "\tToken: ";
     token()->print();
     std::cout << std::endl;
     _left->dumpAST(space + '\t');

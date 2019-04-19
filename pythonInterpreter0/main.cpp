@@ -47,10 +47,10 @@ int main(int argc, char *argv[]) {
     auto stmts = parser.file_input();
     // stmts->dumpAST("");
     //std::cout << std::endl << std::endl;
-    stmts->evaluate(symTab);
+    // stmts->evaluate(symTab);
     // std::cout << "Evaluate Done - Dumping Tree" << std::endl;
 //    std::cout << getMemoryUsage() << std::endl;
-  // stmts->dumpAST("");
+  stmts->dumpAST("");
 
 
 
