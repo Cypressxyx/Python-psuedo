@@ -1,6 +1,10 @@
-def foobar (arg1, arg2, arg2):
-	foo = 1 + 2
-	return 2000
 
-foobar(1 + 3, 2, 3)
+def recurse(val):
+	
+	if val < 100:
+		print val
+		recurse(val + 1)
+	else:
+		print "hit base case"
 
+recurse(1)

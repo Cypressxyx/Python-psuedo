@@ -115,7 +115,7 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
         return nullptr;
     }
 
-    die(scope, "Error", tok);
+    die(scope, "Error ><><><><", tok);
     return nullptr;
 }
 
@@ -378,7 +378,7 @@ std::unique_ptr<Statement> Parser::func_def() {
 
     if ( !tok->isColon() )
         die(scope, "Expected `:` instead got", tok);
-    std::unique_ptr<Statements> funcSuite = func_suite();
+    std::unique_ptr<FunctionStatements> funcSuite = func_suite();
 
     return std::make_unique<FunctionDefinition>(funcName, parameterList, std::move(funcSuite), false);
 }
@@ -444,7 +444,7 @@ std::unique_ptr<Statements> Parser::suite() {
     return nullptr;
 }
 
-std::unique_ptr<Statements> Parser::func_suite() {
+std::unique_ptr<FunctionStatements> Parser::func_suite() {
     //Parses the grammar rule
     // <func_suite> -> NEWLINE INDENT {stmt | return_stmt} + DEDENT
     std::string scope = "Parser::func_suit()";
@@ -459,22 +459,25 @@ std::unique_ptr<Statements> Parser::func_suite() {
     if (!tok->isIndent())
         die(scope, "Expected an INDENT token, instead got: ", tok );
 
-    std::unique_ptr<Statements> stmts = std::make_unique<Statements>();
+    std::unique_ptr<FunctionStatements> functionStmts = std::make_unique<FunctionStatements>();
     tok = lexer.getToken();
     while (!tok->isDedent()) {
         if(tok->isReturn()) {
           lexer.ungetToken();
-          stmts->addStatement(return_stmt());
+          //Jorge FFS
+          functionStmts->setReturnStatement(return_stmt());
+        //   stmts->addStatement(return_stmt());
           tok = lexer.getToken();
           break;
         }
         lexer.ungetToken();
-        stmts->addStatement(stmt());
+        // stmts->addStatement(stmt());
+        functionStmts->addStatement(stmt());
         tok = lexer.getToken();
     }
 
     if ( tok->isDedent())
-        return stmts;
+        return functionStmts;
     die(scope, "Expected a DEDENT token, instead got: ", tok);
     return nullptr;
 }

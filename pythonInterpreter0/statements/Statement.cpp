@@ -29,6 +29,13 @@ void AssignStmt::evaluate(SymTab &symTab) {
         std::cout << "void AssignStmt::evaluate(SymTab &symTab)" << std::endl;
 
     auto rhs = _rhsExpression->evaluate(symTab);
+    
+    if (debug) {
+        std::cout << "Asssign Evaluate: LHS = " << _lhsVariable << "\t";
+        Descriptor::printValue(rhs.get());
+        std::cout << std::endl;
+    }
+    
     symTab.setValueFor(_lhsVariable, std::move(rhs));
 }
 
@@ -262,21 +269,22 @@ void RangeStmt::editOptionals(int which, std::optional<int> opt) {
 FunctionDefinition::FunctionDefinition(
     std::string funcName,
     std::vector<std::string> paramList,
-    std::unique_ptr<Statements> _funcSuite,
+    std::unique_ptr<FunctionStatements> funcSuite,
     bool hasBeenAddedToSymTab):
     _funcName{funcName},
     _paramList{paramList},
-    funcSuite{std::move(_funcSuite)},
+    _funcSuite{std::move(funcSuite)},
     _hasBeenAddedToSymTab{hasBeenAddedToSymTab}
 {}
 
 void FunctionDefinition::evaluate(SymTab &symTab) {
     if ( !_hasBeenAddedToSymTab ) {
         symTab.setFunction(_funcName, std::make_shared<FunctionDefinition>
-            (_funcName, _paramList, std::move(funcSuite), true));
+            (_funcName, _paramList, std::move(_funcSuite), true));
      return;
     }
 
+    _funcSuite->evaluate(symTab);
     // _SUITE_NOT_FUNC_SUITE_FIX->evaluate(symTab);
 }
 
@@ -285,10 +293,10 @@ void FunctionDefinition::dumpAST(std::string spaces) {
     for_each(_paramList.begin(), _paramList.end(), [](auto &str) { std::cout << str << " "; });
     std::cout << ")" << std::endl;
 
-    if (funcSuite == nullptr ) {
+    if ( _funcSuite == nullptr ) {
         std::cout << spaces << "Function std::move() reference removed and moved to function map -- cannot dump" << std::endl;
     } else {
-        funcSuite->dumpAST(spaces + '\t');
+        _funcSuite->dumpAST(spaces + '\t');
     }
 }
 
@@ -317,7 +325,9 @@ FunctionCallStatement::FunctionCallStatement(std::unique_ptr<ExprNode> exprNodeC
 {}
 
 void FunctionCallStatement::evaluate(SymTab &symTab) {
+    symTab.openScope();
     _exprNodeCall->evaluate(symTab);
+    symTab.closeScope();
 }
 
 void FunctionCallStatement::dumpAST(std::string spaces) {
@@ -361,20 +371,49 @@ void Statements::dumpAST(std::string spaces) {
 }
 // END "STATEMENTS"
 
+//START "STATEMENTS"
+void FunctionStatements::addStatement(std::unique_ptr<Statement> stmt) {
+    _statements.push_back(std::move(stmt));
+}
+
+void FunctionStatements::evaluate(SymTab &symTab) {
+
+    for_each(_statements.begin(), _statements.end(), [&](auto &stmt) { stmt->evaluate(symTab); });
+
+    if ( _returnExpression ) {
+        _returnValue = _returnExpression->evaluate(symTab);
+    }
+
+}
+
+void FunctionStatements::dumpAST(std::string spaces) {
+    std::cout << spaces << "FunctionStatements: " << this << std::endl;
+    for_each(_statements.begin(), _statements.end(), [&](auto &stmt) { stmt->dumpAST(spaces + "\t"); });
+    if ( _returnStatement != nullptr ) {
+        _returnStatement->dumpAST(spaces + "\t");
+    }
+}
+
+void FunctionStatements::setReturnExpression(std::unique_ptr<ExprNode> retVal) {
+    _returnExpression = std::move(retVal);
+}
+
+/*std::optional<*/
+    std::unique_ptr<TypeDescriptor>
+/*>*/ FunctionStatements::getReturnValue() {
+    if ( _returnValue )
+        return std::move(_returnValue);
+    return nullptr;
+}
+
+
+//END "STATEMENTS"
+
 
 // START "COMPARISON"
 Comparison::Comparison() {}
 // END "COMPARISON"
 
-
-// START "IF"
-// IfStmt::IfStmt(
-//     std::unique_ptr<ExprNode> comp,
-//     std::unique_ptr<GroupedStatements> stmts
-// ) {
-//     _if.first = std::move(comp);
-//     _if.second = std::move(stmts);
-// }
 IfStmt::IfStmt(
     std::unique_ptr<ExprNode> comp,
     std::unique_ptr<Statements> stmts

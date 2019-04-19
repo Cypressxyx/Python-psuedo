@@ -43,7 +43,7 @@ class Parser {
         std::vector<std::string> parameter_list();
 
         std::unique_ptr<Statements> suite();
-        std::unique_ptr<Statements> func_suite();
+        std::unique_ptr<FunctionStatements> func_suite();
         std::unique_ptr<ReturnStatement> return_stmt();
 
         std::unique_ptr<std::vector<std::unique_ptr<ExprNode>>> testlist();

@@ -40,7 +40,7 @@ InfixExprNode::~InfixExprNode() {
 
 void InfixExprNode::dumpAST(std::string space) {
 
-    std::cout << space << std::setw(15) << std::left << "InfixExprNode " << this << "\tToken";
+    std::cout << space << std::setw(15) << std::left << "InfixExprNode " << this << "\tToken ";
     token()->print();
     std::cout << std::endl;
     _left->dumpAST(space + '\t');
@@ -332,40 +332,32 @@ FunctionCall::FunctionCall(std::shared_ptr<Token> functionName, std::unique_ptr<
 
 std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
 
-    //Use _functionNAme to get shared pointer reference to class FunctionDefinition
-    // size check
-    //Set parameters in symtab /w scope
-    //evaluate function statemets from sp
-    // remove functionArgument names from scope
+    // std::cout << "Evaluate Function Call " << std::endl;
+    
+    //I prefer this variable to be typed
+    std::shared_ptr<FunctionDefinition> functionPointer = symTab.getFunction(_functionName);
+    
+    auto vect = functionPointer->getParamList();
+    int numParams = vect.size();
 
-
-    // INCOMPLETE
-        // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    // INCOMPLETE
-    auto functionPointer = symTab.getFunction(_functionName);
-    int numParams = functionPointer->paramSize();
     if ( numParams != _testList->size()  ) {
         std::cout << "Error FunctionCall::evaluate -> Caller Args != Calling Args" << std::endl;
+        exit(1);
     }
-    symTab.openScope();
-    //auto _paramList = functionPointer->_paramList;
 
-    /*for (int i = 0 ; i < numParams; i ++ ) {
-        auto x = std::move(_testList)[i];
-        //symTab.setValueFor(_paramList[i], x->evaluate(symTab))
-    }*/
 
-  //  symTab.setValueFor
+    int i = 0;
+    for_each(_testList->begin(), _testList->end(), [&](auto &item) {
 
-    symTab.closeScope();
+        symTab.setValueFor(vect[i], item->evaluate(symTab));
+        i++;
+    });
+
+    symTab.activateScope();
+
+
+    functionPointer->evaluate(symTab);
+    // return retVal;
     return Descriptor::Int::createIntDescriptor(1);
 }
 

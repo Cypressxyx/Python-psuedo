@@ -14,6 +14,7 @@ class IfStmt;
 class ElifStmt;
 class ElseStmt;
 class ExprNode;
+class ReturnStatement;
 //class FunctionDefinition;
 
 class Statement {
@@ -43,6 +44,33 @@ public:
 public:
     std::vector<std::unique_ptr<Statement>> _statements;
 };
+
+class FunctionStatements {
+public: 
+    FunctionStatements() = default;
+    ~FunctionStatements() = default;
+
+    void addStatement(std::unique_ptr<Statement>);
+    void evaluate(SymTab &symTab);
+    void dumpAST(std::string);
+
+    void setReturnExpression(std::unique_ptr<ExprNode>);
+    /*std::optional<
+        std::unique_ptr<TypeDescriptor> 
+    >*/std::unique_ptr<TypeDescriptor> getReturnValue();
+
+    void setReturnStatement(std::unique_ptr<ReturnStatement> returnStmt) {
+        _returnStatement = std::move(returnStmt);
+    }
+
+private:
+    std::vector<std::unique_ptr<Statement>> _statements;
+    std::unique_ptr<ReturnStatement> _returnStatement; //?
+    std::unique_ptr<ExprNode> _returnExpression{nullptr};
+    std::unique_ptr<TypeDescriptor> _returnValue{nullptr};
+
+};
+
 
 class AssignStmt : public Statement {
 
@@ -122,15 +150,21 @@ private:
 
 class FunctionDefinition : public Statement {
 public:
-    FunctionDefinition(std::string, std::vector<std::string>, std::unique_ptr<Statements>, bool);
+    FunctionDefinition(std::string, std::vector<std::string>, std::unique_ptr<FunctionStatements>, bool);
     virtual ~FunctionDefinition() = default;
     virtual void evaluate(SymTab &symTab);
     virtual void dumpAST(std::string);
-std::vector<std::string> _paramList;
-std::unique_ptr<Statements> funcSuite;
+
+
+    std::vector<std::string>& getParamList() { return _paramList; }
     int paramSize() { return _paramList.size();}
+    FunctionStatements* getStatements() { return _funcSuite.get(); }
 
 private:
+
+    std::unique_ptr<FunctionStatements> _funcSuite;
+    std::vector<std::string> _paramList;
+
     std::string _funcName;
     bool _hasBeenAddedToSymTab;
 };

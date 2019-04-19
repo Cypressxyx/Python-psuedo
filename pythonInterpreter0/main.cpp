@@ -5,6 +5,7 @@
 
 #include "Token.hpp"
 #include "Parser.hpp"
+#include "DescriptorFunctions.hpp"
 #include "Debug.hpp"
 
 #include "./lex/Lexer.hpp"
@@ -38,24 +39,63 @@ int main(int argc, char *argv[]) {
 
 
 
-    SymTab symTab;
+    SymTab symTab = SymTab();
     Lexer lex = Lexer(inputStream);
 
-    // auto tok = lex.getToken();
 
-    // while ( !tok->eof() ) {
-    //   tok->print();
-    //   tok = lex.getToken();
-    //   std::cout << std::endl;
-    // }
     Parser parser(lex);
-    // std::unique_ptr<GroupedStatements> stmts =  parser.file_input();
     auto stmts = parser.file_input();
-
+    // stmts->dumpAST("");
+    //std::cout << std::endl << std::endl;
     stmts->evaluate(symTab);
     // std::cout << "Evaluate Done - Dumping Tree" << std::endl;
 //    std::cout << getMemoryUsage() << std::endl;
-   stmts->dumpAST("");
+  // stmts->dumpAST("");
+
+
 
     return 0;
 }
+
+
+
+// SYMTAB TESTS
+
+/*
+  symTab.createEntryFor("Nathan", "basescope");
+  symTab.createEntryFor("Thomas", 5);
+  symTab.createEntryFor("Annelise", 15);
+
+  symTab.openScope();
+
+  symTab.createEntryFor("Nathan", "scope2");
+  symTab.createEntryFor("Thomas", 5);
+  symTab.createEntryFor("Annelise", 15);
+
+  symTab.openScope();
+
+  symTab.createEntryFor("Nathan", "scope3");
+  symTab.createEntryFor("Thomas", 5);
+  symTab.createEntryFor("Annelise", 15);
+
+  auto val = symTab.getValueFor("Nathan");
+  std::cout << "Value Is: ";
+  Descriptor::printValue(val);
+  std::cout << std::endl;
+
+  symTab.closeScope();
+
+  val = symTab.getValueFor("Nathan");
+  std::cout << "Value Is: ";
+  Descriptor::printValue(val);
+  std::cout << std::endl;
+
+    symTab.closeScope();
+
+  val = symTab.getValueFor("Nathan");
+  std::cout << "Value Is: ";
+  Descriptor::printValue(val);
+  std::cout << std::endl;
+  symTab.dumpTable();
+
+*/
