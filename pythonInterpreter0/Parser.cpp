@@ -115,7 +115,7 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
         return nullptr;
     }
 
-    die(scope, "Error", tok);
+    die(scope, "Error ><><><><", tok);
     return nullptr;
 }
 

@@ -1,5 +1,6 @@
 #include <stack>
 #include <iostream>
+#include <iomanip>
 #include "SymTab.hpp"
 
 // https://stackoverflow.com/questions/41871115/why-would-i-stdmove-an-stdshared-ptr
@@ -20,7 +21,6 @@ void SymTab::addDescriptor(std::string vName, std::shared_ptr<NumberDescriptor> 
 }
 
 void SymTab::createEntryFor(std::string vName, int value) {
-
     if (debug)
         std::cout << "SymTab::createEntryFor(INT) ->" << value << "<-" << std::endl;
     auto descriptor = std::make_shared<NumberDescriptor>(TypeDescriptor::INTEGER);
@@ -59,6 +59,10 @@ void SymTab::createEntryFor(std::string vName, std::string value) {
         (symTab.top())[vName] = std::move(descriptor);
     else
         globalSymTab[vName] = std::move(descriptor);
+}
+
+void SymTab::createEntryFor(std::string vName, const char* value) {
+    createEntryFor(vName, std::string(value));
 }
 
 void SymTab::setValueFor(std::string vName, std::shared_ptr<TypeDescriptor> sp) {
@@ -100,10 +104,15 @@ TypeDescriptor *SymTab::getValueFor(std::string vName) {
     if ( !isDefined(vName) ) {
         std::cout << "SymTab::getValueFor: " << vName << " has not been defined.\n";
         exit(1);
-    }
+    } /*else {
+        std::cout << "Is defined" << std::endl;
+    }*/
 
     if (debug)
         std::cout << "SymTab::getValueFor: " << vName << "\n";
+    
+    if ( symTab.size() > 0 )
+        return (symTab.top()).find(vName)->second.get();
 
     return globalSymTab.find(vName)->second.get();
 
@@ -124,3 +133,35 @@ void SymTab::closeScope() {
     symTab.pop();
 }
 
+void SymTab::printIndividualTable(std::map<std::string, std::shared_ptr<TypeDescriptor>>& table, std::string scope) {
+
+    std::cout << scope << "PrintIndividualTable" << std::endl;
+    for( auto const& [key, val] : table ) {
+        std::cout << scope << std::setw(15) << std::left << key << '\t';
+        Descriptor::printValue(val.get());
+        std::cout << std::endl;
+    }
+}
+
+void SymTab::dumpTable() {
+
+    std::string scope = "void SymTab::dumpTable()";
+    std::string spacing = "\t";
+    std::cout << scope << std::endl;
+
+    printIndividualTable(globalSymTab, "");
+    std::cout << std::endl;
+    // We nuke the stack for debugging purposes
+    // Stacks don't expose iterators
+    while ( symTab.size() > 0 ) {
+        std::cout << spacing << "SCOPE START" << std::endl;
+        spacing += '\t';
+        printIndividualTable(symTab.top(), spacing);
+        symTab.pop();
+        std::cout << spacing << "Scope END" << std::endl;
+        std::cout << std::endl;
+    }
+
+
+
+}

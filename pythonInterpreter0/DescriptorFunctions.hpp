@@ -298,7 +298,7 @@ namespace Descriptor {
             return desc;
 
         } else {
-            std::cout << "ERROR" << std::endl;
+            std::cout << "Error in copyReferencePtr...ref type is " << ref->type() << std::endl;
             exit(1);
             // Silence Warnings
             return nullptr;

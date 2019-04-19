@@ -6,6 +6,7 @@
 #include <map>
 
 #include "Descriptor.hpp"
+#include "DescriptorFunctions.hpp"
 
 class FunctionDefinition;
 
@@ -22,6 +23,7 @@ public:
     void createEntryFor(std::string, double);
     void createEntryFor(std::string, bool);
     void createEntryFor(std::string, std::string);
+    void createEntryFor(std::string, const char*);
 
     void setValueFor(std::string, std::shared_ptr<TypeDescriptor>);
     // int getValueFor(std::string vName);
@@ -41,6 +43,9 @@ public:
       }
       return _functionTable[fName];
      }
+
+     void printIndividualTable(std::map<std::string, std::shared_ptr<TypeDescriptor>>&, std::string);
+     void dumpTable();
 
 private:
 

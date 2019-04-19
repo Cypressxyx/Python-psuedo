@@ -343,20 +343,18 @@ std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
         exit(1);
     }
 
-    symTab.openScope();
 
     int i = 0;
     for_each(_testList->begin(), _testList->end(), [&](auto &item) {
+        std::cout << "Setting Value for: " << vect[i] << std::endl;
+
+
         symTab.setValueFor(vect[i], item->evaluate(symTab));
+        i++;
     });
 
 
     functionPointer->evaluate(symTab);
-    // functionPointer->getStatements()->evaluate(symTab);
-    // /*auto retVal = */functionPointer->funcSuite->evaluate(symTab);
-
-    symTab.closeScope();
-
     // return retVal;
     return Descriptor::Int::createIntDescriptor(1);
 }

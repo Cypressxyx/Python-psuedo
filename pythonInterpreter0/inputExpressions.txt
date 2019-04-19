@@ -1,5 +1,8 @@
-def testfunc():
-	print "foobar"
-	return 1
 
-a = testfunc() + testfunc()
+def recurse(val):
+	print val 
+	val2 = val + 1
+	print val2
+	recurse(val2)
+
+recurse(1)

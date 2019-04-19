@@ -29,6 +29,13 @@ void AssignStmt::evaluate(SymTab &symTab) {
         std::cout << "void AssignStmt::evaluate(SymTab &symTab)" << std::endl;
 
     auto rhs = _rhsExpression->evaluate(symTab);
+    
+    if (debug) {
+        std::cout << "Asssign Evaluate: LHS = " << _lhsVariable << "\t";
+        Descriptor::printValue(rhs.get());
+        std::cout << std::endl;
+    }
+    
     symTab.setValueFor(_lhsVariable, std::move(rhs));
 }
 
@@ -318,7 +325,9 @@ FunctionCallStatement::FunctionCallStatement(std::unique_ptr<ExprNode> exprNodeC
 {}
 
 void FunctionCallStatement::evaluate(SymTab &symTab) {
+    symTab.openScope();
     _exprNodeCall->evaluate(symTab);
+    symTab.closeScope();
 }
 
 void FunctionCallStatement::dumpAST(std::string spaces) {
@@ -380,8 +389,8 @@ void FunctionStatements::evaluate(SymTab &symTab) {
 void FunctionStatements::dumpAST(std::string spaces) {
     std::cout << spaces << "FunctionStatements: " << this << std::endl;
     for_each(_statements.begin(), _statements.end(), [&](auto &stmt) { stmt->dumpAST(spaces + "\t"); });
-    if ( _returnExpression != nullptr ) {
-        _returnExpression->dumpAST(spaces + "\t");
+    if ( _returnStatement != nullptr ) {
+        _returnStatement->dumpAST(spaces + "\t");
     }
 }
 
@@ -405,15 +414,6 @@ void FunctionStatements::setReturnExpression(std::unique_ptr<ExprNode> retVal) {
 Comparison::Comparison() {}
 // END "COMPARISON"
 
-
-// START "IF"
-// IfStmt::IfStmt(
-//     std::unique_ptr<ExprNode> comp,
-//     std::unique_ptr<GroupedStatements> stmts
-// ) {
-//     _if.first = std::move(comp);
-//     _if.second = std::move(stmts);
-// }
 IfStmt::IfStmt(
     std::unique_ptr<ExprNode> comp,
     std::unique_ptr<Statements> stmts
