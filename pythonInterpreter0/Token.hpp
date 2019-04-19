@@ -87,6 +87,8 @@ public:
       return _keyword.length() > 0;
     }
 
+    std::string getKeyword() const { return _keyword; }
+
     bool isString() const { return _str.length() > 0; }
 
     std::string getString() const {
@@ -117,6 +119,8 @@ public:
     bool isLen()    const { return _keyword == "len";   }
     bool isPeriod() const { return _keyword == ".";     }
     bool isReturn() const { return _keyword == "return";}
+    bool isAppend() const { return _keyword == "append";}
+    bool isPop()    const { return _keyword == "pop";   }
 
     bool isFloat()  const  { return _isFloat; }
     float getFloat() const { return _float; }

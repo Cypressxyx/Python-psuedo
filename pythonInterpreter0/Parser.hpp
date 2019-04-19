@@ -64,6 +64,12 @@ class Parser {
 
         std::unique_ptr<ExprNode> atom();
 
+
+        void subscription();
+        void array_init();
+        void array_ops();
+        void array_len();
+
     private:
         Lexer &lexer;
         // std::shared_ptr<FunctionMap> _functionMap;
