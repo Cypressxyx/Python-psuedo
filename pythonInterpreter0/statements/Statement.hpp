@@ -127,11 +127,17 @@ public:
     virtual void evaluate(SymTab &symTab);
     virtual void dumpAST(std::string);
 
-    std::vector<std::string> _paramList;
-    std::unique_ptr<Statements> funcSuite;
+
+    std::vector<std::string>& getParamList() { return _paramList; }
     int paramSize() { return _paramList.size();}
 
+    
+    std::unique_ptr<Statements> funcSuite;
+    // std::vector<std::string> _paramList;
+
 private:
+    std::vector<std::string> _paramList;
+
     std::string _funcName;
     bool _hasBeenAddedToSymTab;
 };

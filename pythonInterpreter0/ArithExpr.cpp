@@ -335,27 +335,28 @@ std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
     //I prefer this variable to be typed
     std::shared_ptr<FunctionDefinition> functionPointer = symTab.getFunction(_functionName);
     
-    int numParams = functionPointer->paramSize();
+    auto vect = functionPointer->getParamList();
+    int numParams = vect.size();
+
     if ( numParams != _testList->size()  ) {
         std::cout << "Error FunctionCall::evaluate -> Caller Args != Calling Args" << std::endl;
+        exit(1);
     }
 
     symTab.openScope();
 
     int i = 0;
     for_each(_testList->begin(), _testList->end(), [&](auto &item) {
-        symTab.setValueFor(functionPointer->_paramList[i], item->evaluate(symTab));
+        symTab.setValueFor(vect[i], item->evaluate(symTab));
     });
-    // for (int i = 0; i < numParams; i++) {
-    //     symTab.setValueFor(functionPointer->_paramList[i], (_testList.get())[i].evaluate());
-    // }
 
-    auto retVal = functionPointer->funcSuite->evaluate(symTab);
+
+    /*auto retVal = */functionPointer->funcSuite->evaluate(symTab);
 
     symTab.closeScope();
 
-    return retVal;
-    // return Descriptor::Int::createIntDescriptor(1);
+    // return retVal;
+    return Descriptor::Int::createIntDescriptor(1);
 }
 
 void FunctionCall::dumpAST(std::string indent) {
