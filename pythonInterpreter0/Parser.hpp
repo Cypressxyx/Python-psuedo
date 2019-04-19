@@ -65,10 +65,17 @@ class Parser {
         std::unique_ptr<ExprNode> atom();
 
 
-        void subscription();
-        void array_init();
-        void array_ops();
-        void array_len();
+        // void subscription();
+        std::unique_ptr<ExprNode> subscription();
+        
+        //void array_init();
+        std::unique_ptr<ExprNode> array_init();
+        
+        //void array_ops();
+        std::unique_ptr<ExprNode> array_ops();
+
+        // void array_len();
+        std::unique_ptr<ExprNode> array_len();
 
     private:
         Lexer &lexer;

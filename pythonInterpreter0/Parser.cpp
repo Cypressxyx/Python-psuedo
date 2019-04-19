@@ -803,8 +803,8 @@ std::unique_ptr<ExprNode> Parser::atom() {
     return nullptr;
 }
 
-
-void Parser::subscription() {
+// std::unique_ptr<ArraySubscription>
+std::unique_ptr<ExprNode> Parser::subscription() {
     // subscription -> ID `[` test `]`
 
     std::string scope = "Parser::subscription()";
@@ -813,6 +813,8 @@ void Parser::subscription() {
 
     if ( !tok->isName() )
         die(scope, "Expected `ID` instead got", tok);
+
+    std::string name = tok->getName();
 
     tok = lexer.getToken();
 
@@ -826,10 +828,15 @@ void Parser::subscription() {
     if ( !tok->isCloseSquareBracket() )
         die(scope, "Expected `]` instead got", tok);
 
-    return ;
+    return std::make_unique<ArraySubscription> (
+        std::make_shared<Token>(),
+        name,
+        std::move(testNode)
+    );
 }
 
-void Parser::array_init() {
+//std::unique_ptr<ArrayInit>
+std::unique_ptr<ExprNode> Parser::array_init() {
     // array_init -> `[` std::optional<TESTLIST> `]`
 
     std::string scope = "Parser::array_init()";
@@ -841,24 +848,31 @@ void Parser::array_init() {
 
     tok = lexer.getToken();
 
+
     if ( tok->isCloseBracket() ) {
         //return empty array init
-        int trash = 1;
-        return;
-    } else {
-        lexer.ungetToken();
-        auto tl = testlist();
-    }
+        return std::make_unique<ArrayInit>(
+            std::make_shared<Token>(),
+            nullptr 
+        );
+    } 
+    
+    lexer.ungetToken();
+    auto tl = testlist();
 
     tok = lexer.getToken();
     if ( !tok->isCloseSquareBracket() )
         die(scope, "Expected `]` instead got", tok);
 
-    return;
+    return std::make_unique<ArrayInit>(
+        std::make_shared<Token>(), //Hooked up LL2
+        std::move(tl)
+    );
 
 }
 
-void Parser::array_ops() {
+//std::unique_ptr<ArrayOperation>
+std::unique_ptr<ExprNode> Parser::array_ops() {
     // WE NEED TO PASS THIS A TOKEN
     // array_ops -> ID `.`  NREDACT`(` append | pop NREDACT`)` `(` std::opt testlist `)`
     // The function evaluate will check if () has args based on append / pop
@@ -891,9 +905,17 @@ void Parser::array_ops() {
     if ( !tok->isCloseParen() )
         die(scope, "Expected `)` instead got", tok);
 
+    return std::make_unique<ArrayOperation> (
+        std::make_shared<Token>(),
+        "<ID>", // token will be passed in as this requires 2 lookaheads kooshesh broke rules
+        action, //keyword
+        std::move(test_args)
+    );
+
 }
 
-void Parser::array_len() {
+// std::unique_ptr<ArrayLength>
+std::unique_ptr<ExprNode> Parser::array_len() {
     // `len` `(` ID `)`
     
     std::string scope = "Parser::array_len()";
@@ -920,5 +942,9 @@ void Parser::array_len() {
     if ( !tok->isCloseParen() )
         die(scope, "Expected `)` instead got", tok);
 
+    return std::make_unique<ArrayLength> (
+        std::make_shared<Token>(),
+        ID
+    );
     // return nullptr
 }

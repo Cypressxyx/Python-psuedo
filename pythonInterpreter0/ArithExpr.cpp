@@ -442,3 +442,17 @@ std::unique_ptr<TypeDescriptor> ArraySubscription::evaluate(SymTab &symTab){
 // END ArraySubscription
 
 
+//Start ArrayLength
+ArrayLength::ArrayLength(std::shared_ptr<Token> tk, std::string id):
+    ExprNode{tk},
+    _id{id}
+{}
+
+void ArrayLength::dumpAST(std::string spaces) {
+    std::cout << "ArrayLength: " << _id << " " << this << std::endl;
+}
+
+void ArrayLength::print() {}
+
+std::unique_ptr<TypeDescriptor> ArrayLength::evaluate(SymTab &symTab) { return nullptr; }
+// END ArrayLength

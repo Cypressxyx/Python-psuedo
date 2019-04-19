@@ -180,6 +180,18 @@ private:
     std::unique_ptr<ExprNode> _test;
 };
 
+class ArrayLength: public ExprNode {
+public:
+    ArrayLength(std::shared_ptr<Token>, std::string);
+    ~ArrayLength() = default;
+
+    virtual void dumpAST(std::string);
+    virtual void print();
+    virtual std::unique_ptr<TypeDescriptor> evaluate(SymTab &);
+private:
+    std::string _id;
+};
+
 #endif //EXPRINTER_ARITHEXPR_HPP
 
 /*
