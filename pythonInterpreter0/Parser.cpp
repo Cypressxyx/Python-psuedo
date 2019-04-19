@@ -731,6 +731,7 @@ std::unique_ptr<ExprNode> Parser::factor() {
 
     // <factor> -> {'-'} <factor> | <atom>
     // TODO: is this correct?
+    // fuck me we have 2 lookaheads
     std::string scope = "*Parser::factor()";
 
     if (debug)
@@ -745,32 +746,32 @@ std::unique_ptr<ExprNode> Parser::factor() {
 
         return p;
 
-    } else {
-
+    } else if ( tok->isLen() ) {
         lexer.ungetToken();
+        return array_len();
+    } else if ( tok->isName() ) {
 
-        if (debug)
-            std::cout << scope << " return" << std::endl;
+        auto cachedTok = tok;
 
-        auto left = atom();
+        tok = lexer.getToken();
 
-        if ( left->token()->isName() ) {
-            if ( lexer.getToken()->isOpenParen() ) {
-                //function
-                lexer.ungetToken();
-                return call( left->token() );
-            } else {
-                lexer.ungetToken();
-            }
+        if ( tok->isOpenSquareBracket() ) {
+
+            lexer.ungetToken();
+            return subscription( cachedTok );
+
+        } else if ( tok->isOpenParen() ) {
+            lexer.ungetToken();
+            return call( cachedTok );
+        } else {
+            lexer.ungetToken();
+            return std::make_unique<Variable>(cachedTok);
 
         }
-
-        return left;
-
-
+    } else {
+        lexer.ungetToken();
+        return atom();
     }
-    die("Parser::factor", "ERROR", tok);
-    return nullptr;
 }
 
 
@@ -809,19 +810,19 @@ std::unique_ptr<ExprNode> Parser::atom() {
 }
 
 // std::unique_ptr<ArraySubscription>
-std::unique_ptr<ExprNode> Parser::subscription() {
+std::unique_ptr<ExprNode> Parser::subscription(std::shared_ptr<Token> tk) {
     // subscription -> ID `[` test `]`
 
     std::string scope = "Parser::subscription()";
 
+    // auto tok = lexer.getToken();
+
+    // if ( !tok->isName() )
+    //     die(scope, "Expected `ID` instead got", tok);
+
+    // std::string name = tok->getName();
+
     auto tok = lexer.getToken();
-
-    if ( !tok->isName() )
-        die(scope, "Expected `ID` instead got", tok);
-
-    std::string name = tok->getName();
-
-    tok = lexer.getToken();
 
     if ( !tok->isOpenSquareBracket() )
         die(scope, "Expected `[` instead got", tok);
@@ -835,7 +836,7 @@ std::unique_ptr<ExprNode> Parser::subscription() {
 
     return std::make_unique<ArraySubscription> (
         std::make_shared<Token>(),
-        name,
+        tk->getName(),
         std::move(testNode)
     );
 }
