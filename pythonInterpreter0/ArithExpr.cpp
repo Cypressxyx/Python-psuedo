@@ -40,7 +40,7 @@ InfixExprNode::~InfixExprNode() {
 
 void InfixExprNode::dumpAST(std::string space) {
 
-    std::cout << space << std::setw(15) << std::left << "InfixExprNode " << this << "\tToken";
+    std::cout << space << std::setw(15) << std::left << "InfixExprNode " << this << "\tToken ";
     token()->print();
     std::cout << std::endl;
     _left->dumpAST(space + '\t');
@@ -351,7 +351,8 @@ std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
     });
 
 
-    functionPointer->getStatements()->evaluate(symTab);
+    functionPointer->evaluate(symTab);
+    // functionPointer->getStatements()->evaluate(symTab);
     // /*auto retVal = */functionPointer->funcSuite->evaluate(symTab);
 
     symTab.closeScope();

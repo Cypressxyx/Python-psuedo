@@ -44,6 +44,28 @@ public:
     std::vector<std::unique_ptr<Statement>> _statements;
 };
 
+class FunctionStatements {
+public: 
+    FunctionStatements() = default;
+    ~FunctionStatements() = default;
+
+    void addStatements(std::unique_ptr<Statement>);
+    void evaluate(SymTab &symTab);
+    void dumpAST(std::string);
+
+    void setReturnExpression(std::unique_ptr<ExprNode>);
+    /*std::optional<
+        std::unique_ptr<TypeDescriptor> 
+    >*/std::unique_ptr<TypeDescriptor> getReturnValue();
+
+private:
+    std::vector<std::unique_ptr<Statement>> _statements;
+    std::unique_ptr<ExprNode> _returnExpression{nullptr};
+    std::unique_ptr<TypeDescriptor> _returnValue{nullptr};
+
+};
+
+
 class AssignStmt : public Statement {
 
 public:

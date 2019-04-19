@@ -277,6 +277,7 @@ void FunctionDefinition::evaluate(SymTab &symTab) {
      return;
     }
 
+    funcSuite->evaluate(symTab);
     // _SUITE_NOT_FUNC_SUITE_FIX->evaluate(symTab);
 }
 
@@ -360,6 +361,44 @@ void Statements::dumpAST(std::string spaces) {
 
 }
 // END "STATEMENTS"
+
+//START "STATEMENTS"
+void FunctionStatements::addStatements(std::unique_ptr<Statement> stmt) {
+    _statements.push_back(std::move(stmt));
+}
+
+void FunctionStatements::evaluate(SymTab &symTab) {
+
+    for_each(_statements.begin(), _statements.end(), [&](auto &stmt) { stmt->evaluate(symTab); });
+
+    if ( _returnExpression ) {
+        _returnValue = _returnExpression->evaluate(symTab);
+    }
+
+}
+
+void FunctionStatements::dumpAST(std::string spaces) {
+    std::cout << spaces << "FunctionStatements: " << this << std::endl;
+    for_each(_statements.begin(), _statements.end(), [&](auto &stmt) { stmt->dumpAST(spaces + "\t"); });
+    if ( _returnExpression != nullptr ) {
+        _returnExpression->dumpAST(spaces + "\t");
+    }
+}
+
+void FunctionStatements::setReturnExpression(std::unique_ptr<ExprNode> retVal) {
+    _returnExpression = std::move(retVal);
+}
+
+/*std::optional<*/
+    std::unique_ptr<TypeDescriptor>
+/*>*/ FunctionStatements::getReturnValue() {
+    if ( _returnValue )
+        return std::move(_returnValue);
+    return nullptr;
+}
+
+
+//END "STATEMENTS"
 
 
 // START "COMPARISON"

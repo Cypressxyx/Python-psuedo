@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     stmts->evaluate(symTab);
     // std::cout << "Evaluate Done - Dumping Tree" << std::endl;
 //    std::cout << getMemoryUsage() << std::endl;
-  stmts->dumpAST("");
+  // stmts->dumpAST("");
 
     return 0;
 }

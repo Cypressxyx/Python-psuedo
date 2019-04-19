@@ -1,13 +1,5 @@
-def foobar (arg1, arg2, arg2):
-	print "hello world"
+def testfunc():
+	print "foobar"
+	return 1
 
-
-foobar(1 + 3, 2, 3)
-foobar(1 + 3, 2, 3)
-
-foobar(1 + 3, 2, 3)
-foobar(1 + 3, 2, 3)
-foobar(1 + 3, 2, 3)
-foobar(1 + 3, 2, 3)
-
-
+a = testfunc() + testfunc()
