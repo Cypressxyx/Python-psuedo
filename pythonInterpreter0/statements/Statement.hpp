@@ -130,12 +130,11 @@ public:
 
     std::vector<std::string>& getParamList() { return _paramList; }
     int paramSize() { return _paramList.size();}
-
-    
-    std::unique_ptr<Statements> funcSuite;
-    // std::vector<std::string> _paramList;
+    Statements* getStatements() { return funcSuite.get(); }
 
 private:
+
+    std::unique_ptr<Statements> funcSuite;
     std::vector<std::string> _paramList;
 
     std::string _funcName;

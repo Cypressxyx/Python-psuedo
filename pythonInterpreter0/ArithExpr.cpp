@@ -351,7 +351,8 @@ std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
     });
 
 
-    /*auto retVal = */functionPointer->funcSuite->evaluate(symTab);
+    functionPointer->getStatements()->evaluate(symTab);
+    // /*auto retVal = */functionPointer->funcSuite->evaluate(symTab);
 
     symTab.closeScope();
 
