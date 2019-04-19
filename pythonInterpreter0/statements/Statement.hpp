@@ -126,8 +126,9 @@ public:
     virtual ~FunctionDefinition() = default;
     virtual void evaluate(SymTab &symTab);
     virtual void dumpAST(std::string);
-std::vector<std::string> _paramList;
-std::unique_ptr<Statements> funcSuite;
+
+    std::vector<std::string> _paramList;
+    std::unique_ptr<Statements> funcSuite;
     int paramSize() { return _paramList.size();}
 
 private:
