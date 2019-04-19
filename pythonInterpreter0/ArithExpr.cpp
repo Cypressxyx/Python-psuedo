@@ -332,6 +332,8 @@ FunctionCall::FunctionCall(std::shared_ptr<Token> functionName, std::unique_ptr<
 
 std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
 
+    // std::cout << "Evaluate Function Call " << std::endl;
+    
     //I prefer this variable to be typed
     std::shared_ptr<FunctionDefinition> functionPointer = symTab.getFunction(_functionName);
     
@@ -346,12 +348,12 @@ std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
 
     int i = 0;
     for_each(_testList->begin(), _testList->end(), [&](auto &item) {
-        std::cout << "Setting Value for: " << vect[i] << std::endl;
-
 
         symTab.setValueFor(vect[i], item->evaluate(symTab));
         i++;
     });
+
+    symTab.activateScope();
 
 
     functionPointer->evaluate(symTab);

@@ -4,6 +4,7 @@
 #include <string>
 #include <stack>
 #include <map>
+// #include <vector>
 
 #include "Descriptor.hpp"
 #include "DescriptorFunctions.hpp"
@@ -17,6 +18,10 @@ class FunctionDefinition;
 
 class SymTab {
 public:
+
+    SymTab() = default;
+    ~SymTab() = default;
+
     bool isDefined(std::string vName);
     bool erase(std::string vName);
     void createEntryFor(std::string, int);
@@ -31,6 +36,7 @@ public:
     TypeDescriptor *getValueFor(std::string);
 
     void openScope();
+    void activateScope();
     void closeScope();
 
     std::shared_ptr<TypeDescriptor> getReturnValue() { return _returnValue; }
@@ -65,6 +71,14 @@ private:
     std::stack<
         std::map< std::string, std::shared_ptr<TypeDescriptor>
 	>> symTab;
+
+    std::map<std::string, std::shared_ptr<TypeDescriptor>> &previousScope{
+        globalSymTab
+    };
+    bool readFromPreviousScope{false};
+    // std::vector<
+    //     std::map<std::string, std::shared_ptr<TypeDescriptor>>
+    // > symTab;
 
     std::shared_ptr<TypeDescriptor> _returnValue;
 };

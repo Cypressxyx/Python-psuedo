@@ -79,6 +79,12 @@ void SymTab::setValueFor(std::string vName, std::shared_ptr<TypeDescriptor> sp) 
 
 bool SymTab::isDefined(std::string vName) {
     
+    // std::cout << "isDefined" << std::endl;
+
+    if ( readFromPreviousScope ) {
+        return previousScope.find(vName) != previousScope.end();
+    }
+
     if ( symTab.size() > 0 )
         return (symTab.top()).find(vName) != (symTab.top()).end();
     return globalSymTab.find(vName) != globalSymTab.end();
@@ -111,6 +117,11 @@ TypeDescriptor *SymTab::getValueFor(std::string vName) {
     if (debug)
         std::cout << "SymTab::getValueFor: " << vName << "\n";
     
+    if ( readFromPreviousScope ) {
+        // std::cout << "Previous Scope Access" << std::endl;
+        return previousScope.find(vName)->second.get();
+    }
+
     if ( symTab.size() > 0 )
         return (symTab.top()).find(vName)->second.get();
 
@@ -120,8 +131,23 @@ TypeDescriptor *SymTab::getValueFor(std::string vName) {
 
 void SymTab::openScope() {
 
+    // std::cout << "open scope "<< std::endl;
+
+    if ( symTab.size() == 0 ) {
+        previousScope = globalSymTab;
+    } else {
+        previousScope = symTab.top();
+    }
+    // previousScope = (symTab.top());
+    // std::cout << "still open scope" << std::endl;
+    readFromPreviousScope = true;
+
     std::map<std::string, std::shared_ptr<TypeDescriptor>> newScope;
     symTab.push(newScope);
+}
+
+void SymTab::activateScope() {
+    readFromPreviousScope = false;
 }
 
 void SymTab::closeScope() {
@@ -131,37 +157,46 @@ void SymTab::closeScope() {
         exit(1);
     }
     symTab.pop();
+
+    readFromPreviousScope = true;
 }
 
 void SymTab::printIndividualTable(std::map<std::string, std::shared_ptr<TypeDescriptor>>& table, std::string scope) {
 
-    std::cout << scope << "PrintIndividualTable" << std::endl;
-    for( auto const& [key, val] : table ) {
-        std::cout << scope << std::setw(15) << std::left << key << '\t';
-        Descriptor::printValue(val.get());
-        std::cout << std::endl;
-    }
+    // std::cout << scope << "PrintIndividualTable" << std::endl;
+    // for( auto const& [key, val] : table ) {
+    //     std::cout << scope << std::setw(15) << std::left << key << '\t';
+    //     Descriptor::printValue(val.get());
+    //     std::cout << std::endl;
+    // }
 }
 
 void SymTab::dumpTable() {
 
-    std::string scope = "void SymTab::dumpTable()";
-    std::string spacing = "\t";
-    std::cout << scope << std::endl;
+    // std::string scope = "void SymTab::dumpTable()";
+    // std::string spacing = "\t";
+    // std::cout << scope << std::endl;
 
-    printIndividualTable(globalSymTab, "");
-    std::cout << std::endl;
-    // We nuke the stack for debugging purposes
-    // Stacks don't expose iterators
-    while ( symTab.size() > 0 ) {
-        std::cout << spacing << "SCOPE START" << std::endl;
-        spacing += '\t';
-        printIndividualTable(symTab.top(), spacing);
-        symTab.pop();
-        std::cout << spacing << "Scope END" << std::endl;
-        std::cout << std::endl;
-    }
+    // printIndividualTable(globalSymTab, "");
+    // std::cout << std::endl;
+    // // We nuke the stack for debugging purposes
+    // // Stacks don't expose iterators
+    // while ( symTab.size() > 0 ) {
+    //     std::cout << spacing << "SCOPE START" << std::endl;
+    //     spacing += '\t';
+    //     printIndividualTable(symTab.top(), spacing);
+    //     symTab.pop();
+    //     std::cout << spacing << "Scope END" << std::endl;
+    //     std::cout << std::endl;
+    // }
 
 
 
 }
+
+// template<class _Ty> inline
+//   constexpr typename remove_reference<_Ty>::type&&
+//     move(_Ty&& _Arg) _NOEXCEPT
+//   {
+//     return (static_cast<typename remove_reference<_Ty>::type&&>(_Arg));
+//   }

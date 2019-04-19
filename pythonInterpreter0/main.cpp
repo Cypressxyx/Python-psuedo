@@ -39,14 +39,14 @@ int main(int argc, char *argv[]) {
 
 
 
-    SymTab symTab;
+    SymTab symTab = SymTab();
     Lexer lex = Lexer(inputStream);
 
 
     Parser parser(lex);
     auto stmts = parser.file_input();
-     stmts->dumpAST("");
-    std::cout << std::endl << std::endl;
+    // stmts->dumpAST("");
+    //std::cout << std::endl << std::endl;
     stmts->evaluate(symTab);
     // std::cout << "Evaluate Done - Dumping Tree" << std::endl;
 //    std::cout << getMemoryUsage() << std::endl;
