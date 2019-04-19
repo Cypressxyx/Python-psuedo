@@ -262,22 +262,22 @@ void RangeStmt::editOptionals(int which, std::optional<int> opt) {
 FunctionDefinition::FunctionDefinition(
     std::string funcName,
     std::vector<std::string> paramList,
-    std::unique_ptr<Statements> _funcSuite,
+    std::unique_ptr<FunctionStatements> funcSuite,
     bool hasBeenAddedToSymTab):
     _funcName{funcName},
     _paramList{paramList},
-    funcSuite{std::move(_funcSuite)},
+    _funcSuite{std::move(funcSuite)},
     _hasBeenAddedToSymTab{hasBeenAddedToSymTab}
 {}
 
 void FunctionDefinition::evaluate(SymTab &symTab) {
     if ( !_hasBeenAddedToSymTab ) {
         symTab.setFunction(_funcName, std::make_shared<FunctionDefinition>
-            (_funcName, _paramList, std::move(funcSuite), true));
+            (_funcName, _paramList, std::move(_funcSuite), true));
      return;
     }
 
-    funcSuite->evaluate(symTab);
+    _funcSuite->evaluate(symTab);
     // _SUITE_NOT_FUNC_SUITE_FIX->evaluate(symTab);
 }
 
@@ -286,10 +286,10 @@ void FunctionDefinition::dumpAST(std::string spaces) {
     for_each(_paramList.begin(), _paramList.end(), [](auto &str) { std::cout << str << " "; });
     std::cout << ")" << std::endl;
 
-    if (funcSuite == nullptr ) {
+    if ( _funcSuite == nullptr ) {
         std::cout << spaces << "Function std::move() reference removed and moved to function map -- cannot dump" << std::endl;
     } else {
-        funcSuite->dumpAST(spaces + '\t');
+        _funcSuite->dumpAST(spaces + '\t');
     }
 }
 
@@ -363,7 +363,7 @@ void Statements::dumpAST(std::string spaces) {
 // END "STATEMENTS"
 
 //START "STATEMENTS"
-void FunctionStatements::addStatements(std::unique_ptr<Statement> stmt) {
+void FunctionStatements::addStatement(std::unique_ptr<Statement> stmt) {
     _statements.push_back(std::move(stmt));
 }
 
