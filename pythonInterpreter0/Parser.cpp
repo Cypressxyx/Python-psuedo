@@ -160,6 +160,16 @@ std::unique_ptr<AssignStmt> Parser::assign_stmt(std::shared_ptr<Token> varName) 
     if ( !assignOp->isAssignmentOperator() )
         die(scope, "Parser::assign_stmt() expected `ASSIGN_OP` instead got ", assignOp);
 
+    auto tok = lexer.getToken();
+
+    if ( tok->isOpenSquareBracket() ) {
+        lexer.ungetToken();
+        auto a_init = array_init();
+        return std::make_unique<AssignStmt>(varName->getName(), std::move(a_init));
+    }
+
+    lexer.ungetToken();
+
     std::unique_ptr<ExprNode> rightHandSideExpr = test();
 
     if (debug)
