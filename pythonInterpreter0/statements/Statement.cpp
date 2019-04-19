@@ -527,3 +527,22 @@ void ElseStmt::dumpAST(std::string spaces) {
     _stmts->dumpAST(spaces + "\t");
 }
 // END "ELSE"
+
+//START ArrayOperation
+ArrayOperation::ArrayOperation(
+    std::string id, 
+    std::string keyword, 
+    std::unique_ptr<ExprNode> test):
+    _id{id},
+    _keyword{keyword},
+    _test{std::move(test)}
+{}
+
+void ArrayOperation::dumpAST(std::string spaces) {
+    std::cout << spaces << "ArrayOperation ( " << _keyword << " ): " << _id << " "  << this << std::endl;
+    _test->dumpAST(spaces + "\t");
+}
+
+
+void ArrayOperation::evaluate(SymTab &symTab){}
+//END ArrayOperation

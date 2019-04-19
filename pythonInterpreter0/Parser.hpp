@@ -72,7 +72,7 @@ class Parser {
         std::unique_ptr<ExprNode> array_init();
         
         //void array_ops();
-        std::unique_ptr<ExprNode> array_ops();
+        std::unique_ptr<ArrayOperation> array_ops(std::shared_ptr<Token>);
 
         // void array_len();
         std::unique_ptr<ExprNode> array_len();

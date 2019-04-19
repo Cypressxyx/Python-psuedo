@@ -81,7 +81,7 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
         getEOL(scope);
         return printStmt;
 
-    }
+    } 
     else if ( tok->isReturn() ) {
         // std::unique_ptr<ReturnStatement> retStmt = return_stmt();
         // getEOF(scope);
@@ -106,6 +106,11 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
                 );
             getEOL(scope);
             return callStmt;
+        } else if ( tok->isPeriod() ) {
+            lexer.ungetToken();
+            std::unique_ptr<ArrayOperation> arrayop = array_ops(cachedToken);
+            getEOL(scope);
+            return arrayop;
         } else {
             die(scope, "Unidentified -> 1 <-", tok);
         } // Remember to add else if(tok->isPerioid()) // array operator
@@ -872,7 +877,7 @@ std::unique_ptr<ExprNode> Parser::array_init() {
 }
 
 //std::unique_ptr<ArrayOperation>
-std::unique_ptr<ExprNode> Parser::array_ops() {
+std::unique_ptr<ArrayOperation> Parser::array_ops(std::shared_ptr<Token> tk) {
     // WE NEED TO PASS THIS A TOKEN
     // array_ops -> ID `.`  NREDACT`(` append | pop NREDACT`)` `(` std::opt testlist `)`
     // The function evaluate will check if () has args based on append / pop
@@ -906,8 +911,8 @@ std::unique_ptr<ExprNode> Parser::array_ops() {
         die(scope, "Expected `)` instead got", tok);
 
     return std::make_unique<ArrayOperation> (
-        std::make_shared<Token>(),
-        "<ID>", // token will be passed in as this requires 2 lookaheads kooshesh broke rules
+        //"<ID>", // token will be passed in as this requires 2 lookaheads kooshesh broke rules
+        tk->getName(),
         action, //keyword
         std::move(test_args)
     );

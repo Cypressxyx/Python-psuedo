@@ -373,30 +373,6 @@ void FunctionCall::dumpAST(std::string indent) {
 void FunctionCall::print() {}
 // End FunctionCall
 
-
-//START ArrayOperation
-ArrayOperation::ArrayOperation(
-    std::shared_ptr<Token> tk,
-    std::string id, 
-    std::string keyword, 
-    std::unique_ptr<ExprNode> test):
-    ExprNode{tk},
-    _id{id},
-    _keyword{keyword},
-    _test{std::move(test)}
-{}
-
-void ArrayOperation::dumpAST(std::string spaces) {
-    std::cout << spaces << "ArrayOperation ( " << _keyword << " ): " << _id << " "  << this << std::endl;
-    _test->dumpAST(spaces + "\t");
-}
-
-void ArrayOperation::print() {}
-
-std::unique_ptr<TypeDescriptor> ArrayOperation::evaluate(SymTab &symTab){ return nullptr;}
-//END ArrayOperation
-
-
 //START ArrayInit
 ArrayInit::ArrayInit(
     std::shared_ptr<Token> tk,
