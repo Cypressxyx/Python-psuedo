@@ -190,6 +190,20 @@ private:
     std::unique_ptr<ExprNode> _exprNodeCall;
 };
 
+class ArrayOperation: public Statement {
+public:
+    ArrayOperation(std::string, std::string, std::unique_ptr<ExprNode>);
+    ~ArrayOperation() = default;
+
+    virtual void dumpAST(std::string);
+
+    virtual void evaluate(SymTab &);
+
+private:
+    std::string _id; // <ID>
+    std::string _keyword; // append || pop
+    std::unique_ptr<ExprNode> _test;
+};
 
 class Comparison {
 

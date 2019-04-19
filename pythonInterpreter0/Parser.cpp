@@ -81,7 +81,7 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
         getEOL(scope);
         return printStmt;
 
-    }
+    } 
     else if ( tok->isReturn() ) {
         // std::unique_ptr<ReturnStatement> retStmt = return_stmt();
         // getEOF(scope);
@@ -106,6 +106,11 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
                 );
             getEOL(scope);
             return callStmt;
+        } else if ( tok->isPeriod() ) {
+            lexer.ungetToken();
+            std::unique_ptr<ArrayOperation> arrayop = array_ops(cachedToken);
+            getEOL(scope);
+            return arrayop;
         } else {
             die(scope, "Unidentified -> 1 <-", tok);
         } // Remember to add else if(tok->isPerioid()) // array operator
@@ -154,6 +159,16 @@ std::unique_ptr<AssignStmt> Parser::assign_stmt(std::shared_ptr<Token> varName) 
     auto assignOp = lexer.getToken();
     if ( !assignOp->isAssignmentOperator() )
         die(scope, "Parser::assign_stmt() expected `ASSIGN_OP` instead got ", assignOp);
+
+    auto tok = lexer.getToken();
+
+    if ( tok->isOpenSquareBracket() ) {
+        lexer.ungetToken();
+        auto a_init = array_init();
+        return std::make_unique<AssignStmt>(varName->getName(), std::move(a_init));
+    }
+
+    lexer.ungetToken();
 
     std::unique_ptr<ExprNode> rightHandSideExpr = test();
 
@@ -726,6 +741,7 @@ std::unique_ptr<ExprNode> Parser::factor() {
 
     // <factor> -> {'-'} <factor> | <atom>
     // TODO: is this correct?
+    // fuck me we have 2 lookaheads
     std::string scope = "*Parser::factor()";
 
     if (debug)
@@ -740,32 +756,32 @@ std::unique_ptr<ExprNode> Parser::factor() {
 
         return p;
 
-    } else {
-
+    } else if ( tok->isLen() ) {
         lexer.ungetToken();
+        return array_len();
+    } else if ( tok->isName() ) {
 
-        if (debug)
-            std::cout << scope << " return" << std::endl;
+        auto cachedTok = tok;
 
-        auto left = atom();
+        tok = lexer.getToken();
 
-        if ( left->token()->isName() ) {
-            if ( lexer.getToken()->isOpenParen() ) {
-                //function
-                lexer.ungetToken();
-                return call( left->token() );
-            } else {
-                lexer.ungetToken();
-            }
+        if ( tok->isOpenSquareBracket() ) {
+
+            lexer.ungetToken();
+            return subscription( cachedTok );
+
+        } else if ( tok->isOpenParen() ) {
+            lexer.ungetToken();
+            return call( cachedTok );
+        } else {
+            lexer.ungetToken();
+            return std::make_unique<Variable>(cachedTok);
 
         }
-
-        return left;
-
-
+    } else {
+        lexer.ungetToken();
+        return atom();
     }
-    die("Parser::factor", "ERROR", tok);
-    return nullptr;
 }
 
 
@@ -804,19 +820,19 @@ std::unique_ptr<ExprNode> Parser::atom() {
 }
 
 // std::unique_ptr<ArraySubscription>
-std::unique_ptr<ExprNode> Parser::subscription() {
+std::unique_ptr<ExprNode> Parser::subscription(std::shared_ptr<Token> tk) {
     // subscription -> ID `[` test `]`
 
     std::string scope = "Parser::subscription()";
 
+    // auto tok = lexer.getToken();
+
+    // if ( !tok->isName() )
+    //     die(scope, "Expected `ID` instead got", tok);
+
+    // std::string name = tok->getName();
+
     auto tok = lexer.getToken();
-
-    if ( !tok->isName() )
-        die(scope, "Expected `ID` instead got", tok);
-
-    std::string name = tok->getName();
-
-    tok = lexer.getToken();
 
     if ( !tok->isOpenSquareBracket() )
         die(scope, "Expected `[` instead got", tok);
@@ -830,7 +846,7 @@ std::unique_ptr<ExprNode> Parser::subscription() {
 
     return std::make_unique<ArraySubscription> (
         std::make_shared<Token>(),
-        name,
+        tk->getName(),
         std::move(testNode)
     );
 }
@@ -872,7 +888,7 @@ std::unique_ptr<ExprNode> Parser::array_init() {
 }
 
 //std::unique_ptr<ArrayOperation>
-std::unique_ptr<ExprNode> Parser::array_ops() {
+std::unique_ptr<ArrayOperation> Parser::array_ops(std::shared_ptr<Token> tk) {
     // WE NEED TO PASS THIS A TOKEN
     // array_ops -> ID `.`  NREDACT`(` append | pop NREDACT`)` `(` std::opt testlist `)`
     // The function evaluate will check if () has args based on append / pop
@@ -906,8 +922,8 @@ std::unique_ptr<ExprNode> Parser::array_ops() {
         die(scope, "Expected `)` instead got", tok);
 
     return std::make_unique<ArrayOperation> (
-        std::make_shared<Token>(),
-        "<ID>", // token will be passed in as this requires 2 lookaheads kooshesh broke rules
+        //"<ID>", // token will be passed in as this requires 2 lookaheads kooshesh broke rules
+        tk->getName(),
         action, //keyword
         std::move(test_args)
     );

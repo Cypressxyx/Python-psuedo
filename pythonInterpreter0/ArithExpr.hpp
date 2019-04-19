@@ -136,21 +136,6 @@ private:
     std::unique_ptr<std::vector<std::unique_ptr<ExprNode>>> _testList;
 };
 
-class ArrayOperation: public ExprNode {
-public:
-    ArrayOperation(std::shared_ptr<Token>, std::string, std::string, std::unique_ptr<ExprNode>);
-    ~ArrayOperation() = default;
-
-    virtual void dumpAST(std::string);
-    virtual void print();
-
-    virtual std::unique_ptr<TypeDescriptor> evaluate(SymTab &);
-
-private:
-    std::string _id; // <ID>
-    std::string _keyword; // append || pop
-    std::unique_ptr<ExprNode> _test;
-};
 
 class ArrayInit: public ExprNode {
 public:

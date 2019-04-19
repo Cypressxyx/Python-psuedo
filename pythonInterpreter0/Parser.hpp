@@ -63,16 +63,17 @@ class Parser {
         std::unique_ptr<ExprNode> call(std::shared_ptr<Token>);
 
         std::unique_ptr<ExprNode> atom();
-
+        // std::unique_ptr<ExprNode> atom(std::shared_ptr<Token>);
 
         // void subscription();
-        std::unique_ptr<ExprNode> subscription();
+        // std::unique_ptr<ExprNode> subscription();
+        std::unique_ptr<ExprNode> subscription(std::shared_ptr<Token>);
         
         //void array_init();
         std::unique_ptr<ExprNode> array_init();
         
         //void array_ops();
-        std::unique_ptr<ExprNode> array_ops();
+        std::unique_ptr<ArrayOperation> array_ops(std::shared_ptr<Token>);
 
         // void array_len();
         std::unique_ptr<ExprNode> array_len();

@@ -1,10 +1,7 @@
 
-def recurse(val):
-	
-	if val < 100:
-		print val
-		recurse(val + 1)
-	else:
-		print "hit base case"
+arrayName = [1, 2, 3, 4]
 
-recurse(1)
+print arrayName[2]
+
+print len(arrayName)
+
