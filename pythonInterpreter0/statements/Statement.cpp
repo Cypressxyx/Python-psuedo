@@ -615,7 +615,9 @@ void ArrayOperation::evaluate(SymTab &symTab){
     }
     
     if ( _keyword == "pop" && arrayDescriptor != nullptr ) {
-        arrayDescriptor->pop();
+
+        int indexTopPop = Descriptor::Int::getIntValue(_test->evaluate(symTab).get());
+        arrayDescriptor->pop(indexTopPop);
     }
 }
 //END ArrayOperation

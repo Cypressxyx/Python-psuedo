@@ -26,7 +26,9 @@ class BaseArrayClass {
 
   int getSize() { return _vector.size(); }
 
-  void pop() { _vector.pop_back(); }
+  void pop(int index) { 
+      _vector.erase(_vector.begin() + index);
+    }
 
   std::vector<T> _vector;
 };
@@ -146,15 +148,15 @@ public:
         return 0;
     }
 
-    void pop() {
+    void pop(int index) {
         if ( type() ==  ARRAY_INT)
-            _integerArray.pop();
+            _integerArray.pop(index);
         else if ( type() == ARRAY_DOUBLE)
-            _doubleArray.pop();
+            _doubleArray.pop(index);
         else if ( type() == ARRAY_BOOL)
-            _doubleArray.pop();
+            _doubleArray.pop(index);
         else if ( type() == ARRAY_STRING)
-            _stringArray.pop();
+            _stringArray.pop(index);
     }
 
     int getIntSubscript(int i) {return _integerArray.getItem(i);}

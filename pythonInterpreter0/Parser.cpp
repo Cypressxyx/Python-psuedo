@@ -915,6 +915,8 @@ std::unique_ptr<ArrayOperation> Parser::array_ops(std::shared_ptr<Token> tk) {
     if ( !tok->isOpenParen() )
         die(scope, "Expected `(` instead got", tok);
 
+    // tok = lexer.getToken();
+
     auto test_args = test();
 
     tok = lexer.getToken();
