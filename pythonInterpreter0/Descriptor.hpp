@@ -22,7 +22,7 @@ class BaseArrayClass {
     }
   }
 
-  void getSize() { return _vector.size(); }
+  int getSize() { return _vector.size(); }
 
   std::vector<T> _vector;
 };
@@ -116,7 +116,7 @@ public:
 
     void print() {
 
-        if ( type() ==  ARRAY_INT) 
+        if ( type() == ARRAY_INT)  
             _integerArray.printItems();
         else if ( type() == ARRAY_DOUBLE)
             _doubleArray.printItems();
@@ -124,7 +124,20 @@ public:
             _doubleArray.printItems();
         else if ( type() == ARRAY_STRING)
             _stringArray.printItems();
+        
+    }
 
+    int getLength() {
+        if ( type() ==  ARRAY_INT) {
+            return _integerArray.getSize();
+        }
+        else if ( type() == ARRAY_DOUBLE)
+            return _doubleArray.getSize();
+        else if ( type() == ARRAY_BOOL)
+            return _doubleArray.getSize();
+        else if ( type() == ARRAY_STRING)
+            return _stringArray.getSize();
+        return 0;
     }
 
     void setInitialized() { initialized = true; }

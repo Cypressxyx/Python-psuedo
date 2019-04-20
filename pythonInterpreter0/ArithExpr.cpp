@@ -488,5 +488,19 @@ void ArrayLength::dumpAST(std::string spaces) {
 
 void ArrayLength::print() {}
 
-std::unique_ptr<TypeDescriptor> ArrayLength::evaluate(SymTab &symTab) { return nullptr; }
+std::unique_ptr<TypeDescriptor> ArrayLength::evaluate(SymTab &symTab) { 
+
+    TypeDescriptor* rawPtr = symTab.getValueFor(_id);
+
+    auto casted = dynamic_cast<ArrayDescriptor *>(rawPtr);
+
+    if ( casted == nullptr ) {
+        std::cout << "Could not call length on node" << std::endl;
+        exit(1);
+    }
+
+    return Descriptor::Int::createIntDescriptor(casted->getLength());
+
+
+}
 // END ArrayLength
