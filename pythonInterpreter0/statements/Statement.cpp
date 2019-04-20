@@ -595,18 +595,18 @@ void ArrayOperation::evaluate(SymTab &symTab){
     auto arrayDescriptor = dynamic_cast<ArrayDescriptor *>(arrayRef);
 
 
-    if ( _keyword == "append" && arrayDescriptor != nullptr ) {
+    if ( _keyword == "append" /*&& arrayDescriptor != nullptr*/ ) {
 
         auto descriptorLHS = _test->evaluate(symTab);
 
         if ( descriptorLHS->type() == TypeDescriptor::INTEGER ) {
-            descriptorLHS->addItem(Descriptor::Int::createIntDescriptor(descriptorLHS.get()));
-        } else if ( == TypeDescriptor::DOUBLE ) {
-            descriptorLHS->addItem(Descriptor::Double::createDoubleDescriptor(descriptorLHS.get()));
-        } else if ( == TypeDescriptor::BOOL) {
-            descriptorLHS->addItem(Descriptor::Bool::createBooleanDescriptor(descriptorLHS.get()));
-        } else if ( == TypeDescriptor::STRING) {
-            descriptorLHS->addItem(Descriptor::String::createStringDescriptor(descriptorLHS.get()));
+            arrayDescriptor->addItem(Descriptor::Int::getIntValue(descriptorLHS.get()));
+        } else if ( descriptorLHS->type() == TypeDescriptor::DOUBLE ) {
+            arrayDescriptor->addItem(Descriptor::Double::getDoubleValue(descriptorLHS.get()));
+        } else if ( descriptorLHS->type() == TypeDescriptor::BOOL) {
+            arrayDescriptor->addItem(Descriptor::Bool::getBoolValue(descriptorLHS.get()));
+        } else if ( descriptorLHS->type() == TypeDescriptor::STRING) {
+            arrayDescriptor->addItem(Descriptor::String::getStringValue(descriptorLHS.get()));
         } else {
             std::cout << "Error ArrayOperation::Evaluate" << std::endl;
         }
@@ -615,7 +615,7 @@ void ArrayOperation::evaluate(SymTab &symTab){
     }
     
     if ( _keyword == "pop" && arrayDescriptor != nullptr ) {
-        descriptorLHS->pop();
+        arrayDescriptor->pop();
     }
 }
 //END ArrayOperation
