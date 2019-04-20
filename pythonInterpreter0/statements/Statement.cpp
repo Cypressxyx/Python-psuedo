@@ -153,7 +153,6 @@ PrintStatement::~PrintStatement() {
 }
 
 void PrintStatement::evaluate(SymTab &symTab) {
-
     if (debug)
         std::cout << "void PrintStatement::evaluate(SymTab &symTab)" << std::endl;
 
@@ -592,3 +591,4 @@ void ArrayOperation::dumpAST(std::string spaces) {
 
 void ArrayOperation::evaluate(SymTab &symTab){}
 //END ArrayOperation
+

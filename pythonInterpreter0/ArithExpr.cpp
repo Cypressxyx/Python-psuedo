@@ -405,7 +405,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
     int i = 0;
 
     if ( tyDescriptor->type() == TypeDescriptor::INTEGER ) {
-        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::INTEGER);
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::ARRAY_INT);
         retDescriptor->addItem(Descriptor::Int::getIntValue(tyDescriptor.get()));
 
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
@@ -415,7 +415,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         });
     }
     else if ( tyDescriptor->type() == TypeDescriptor::DOUBLE ) {
-        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::DOUBLE);
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::ARRAY_DOUBLE);
         retDescriptor->addItem(Descriptor::Double::getDoubleValue(tyDescriptor.get()));
 
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
@@ -425,7 +425,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         });
     }
     else if ( tyDescriptor->type() == TypeDescriptor::BOOL ) {
-        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::BOOL);
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::ARRAY_BOOL);
         retDescriptor->addItem(Descriptor::Bool::getBoolValue(tyDescriptor.get()));
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
             if (i != 0) 
@@ -434,7 +434,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         });
     }
     else if ( tyDescriptor->type() == TypeDescriptor::STRING ) {
-        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::STRING);
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::ARRAY_STRING);
         retDescriptor->addItem(Descriptor::String::getStringValue(tyDescriptor.get()));
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
             if (i != 0) 
@@ -449,7 +449,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
 
 
 
-    return tyDescriptor;
+    return retDescriptor;
 }
 //END ArrayInit
 

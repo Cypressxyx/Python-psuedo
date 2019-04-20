@@ -16,7 +16,8 @@ class BaseArrayClass {
     _vector.reserve(100);
   }
 
-  void printItem() {
+  void printItems() {
+      std::cout << "inside print items" << std::endl;
     for (auto &item: _vector) {
       std::cout << item << std::endl;
     }
@@ -112,6 +113,19 @@ public:
     ~ArrayDescriptor() {
         if ( destructor )
             std::cout << "~ArrayDescriptor" << std::endl;
+    }
+
+    void print() {
+
+        if ( type() ==  ARRAY_INT) 
+            _integerArray.printItems();
+        else if ( type() == ARRAY_DOUBLE)
+            _doubleArray.printItems();
+        else if ( type() == ARRAY_BOOL)
+            _doubleArray.printItems();
+        else if ( type() == ARRAY_STRING)
+            _stringArray.printItems();
+
     }
 
     void setInitialized() { initialized = true; }
