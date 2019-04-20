@@ -22,6 +22,8 @@ class BaseArrayClass {
     }
   }
 
+  //T getElement(int idx) { return _vector[idx]; }
+
   int getSize() { return _vector.size(); }
 
   std::vector<T> _vector;
@@ -30,6 +32,7 @@ class BaseArrayClass {
 class IntArray: public BaseArrayClass<int> {
   public:
     IntArray() {}
+    int getItem(int i)  { return _vector[i];}
     void addItem(int i) { _vector.push_back(i); }
 };
 
@@ -37,12 +40,14 @@ class StringArray: public BaseArrayClass<std::string> {
   public:
     StringArray() {}
     void addItem(std::string s) { _vector.push_back(s); }
+    std::string getItem(int i)  { return _vector[i];}
 };
 
 class DoubleArray: public BaseArrayClass<double> {
   public:
     DoubleArray() {}
     void addItem(double d) { _vector.push_back(d); }
+    double getItem(int i)  { return _vector[i];}
 };
 
 class BoolArray: public BaseArrayClass<bool> {
@@ -116,7 +121,7 @@ public:
 
     void print() {
 
-        if ( type() == ARRAY_INT)  
+        if ( type() == ARRAY_INT)
             _integerArray.printItems();
         else if ( type() == ARRAY_DOUBLE)
             _doubleArray.printItems();
@@ -124,7 +129,7 @@ public:
             _doubleArray.printItems();
         else if ( type() == ARRAY_STRING)
             _stringArray.printItems();
-        
+
     }
 
     int getLength() {
@@ -139,6 +144,10 @@ public:
             return _stringArray.getSize();
         return 0;
     }
+
+    int getIntSubscript(int i) {return _integerArray.getItem(i);}
+    std::string getStringSubscript(int i) {return _stringArray.getItem(i);}
+    double getDoubleSubscript(int i) {return _doubleArray.getItem(i);}
 
     void setInitialized() { initialized = true; }
 
