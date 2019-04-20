@@ -395,8 +395,8 @@ void ArrayInit::dumpAST(std::string spaces) {
 void ArrayInit::print() {}
 
 std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
-    
-    if ( _testList->size() == 0 ) 
+
+    if ( _testList->size() == 0 )
         return std::make_unique<ArrayDescriptor>(TypeDescriptor::NOTY_ARRAY);
 
     auto tyDescriptor = _testList->at(0)->evaluate(symTab);
@@ -409,7 +409,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         retDescriptor->addItem(Descriptor::Int::getIntValue(tyDescriptor.get()));
 
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
-            if (i != 0) 
+            if (i != 0)
                 retDescriptor->addItem(Descriptor::Int::getIntValue(tl->evaluate(symTab).get()));
             i += 1;
         });
@@ -419,7 +419,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         retDescriptor->addItem(Descriptor::Double::getDoubleValue(tyDescriptor.get()));
 
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
-            if (i != 0) 
+            if (i != 0)
                 retDescriptor->addItem(Descriptor::Double::getDoubleValue(tl->evaluate(symTab).get()));
             i += 1;
         });
@@ -428,7 +428,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::ARRAY_BOOL);
         retDescriptor->addItem(Descriptor::Bool::getBoolValue(tyDescriptor.get()));
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
-            if (i != 0) 
+            if (i != 0)
                 retDescriptor->addItem(Descriptor::Bool::getBoolValue(tl->evaluate(symTab).get()));
             i += 1;
         });
@@ -437,7 +437,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
         retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::ARRAY_STRING);
         retDescriptor->addItem(Descriptor::String::getStringValue(tyDescriptor.get()));
         for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
-            if (i != 0) 
+            if (i != 0)
                 retDescriptor->addItem(Descriptor::String::getStringValue(tl->evaluate(symTab).get()));
             i += 1;
         });
@@ -471,6 +471,30 @@ void ArraySubscription::dumpAST(std::string spaces) {
 void ArraySubscription::print() {}
 
 std::unique_ptr<TypeDescriptor> ArraySubscription::evaluate(SymTab &symTab){
+    auto subscriptionValue = _test->evaluate(symTab);
+    if (subscriptionValue->type() != TypeDescriptor::INTEGER) {
+      std::cout << "Can only index an array using integers\n";
+      return nullptr;
+    }
+    NumberDescriptor *index = dynamic_cast<NumberDescriptor *>(subscriptionValue.get());
+    int idx = index->_value.intValue;
+    auto arr = Descriptor::copyReferencePtr(symTab.getValueFor(_id));
+    ArrayDescriptor *arrDesc = dynamic_cast<ArrayDescriptor *>(arr.get());
+
+    if ( arr->type() == ArrayDescriptor::ARRAY_INT ) {
+      auto arrDescript = dynamic_cast<ArrayDescriptor *>(arrDesc);
+      return Descriptor::Int::createIntDescriptor( arrDescript->getIntSubscript(idx) );
+    }
+    else if (arr->type() == ArrayDescriptor::ARRAY_STRING) {
+        auto arrDescript = dynamic_cast<ArrayDescriptor *>(arrDesc);
+        return Descriptor::String::createStringDescriptor(arrDescript->getStringSubscript(idx));
+    }
+    else if (arr->type() == ArrayDescriptor::ARRAY_DOUBLE) {
+        auto arrDescript = dynamic_cast<ArrayDescriptor *>(arrDesc);
+        return Descriptor::Double::createDoubleDescriptor(arrDescript->getDoubleSubscript(idx));
+    }
+    std::cout << "Invalid type in typedescriptor: " << arr->type() << std::endl;
+
     return nullptr;
 }
 // END ArraySubscription
@@ -488,7 +512,7 @@ void ArrayLength::dumpAST(std::string spaces) {
 
 void ArrayLength::print() {}
 
-std::unique_ptr<TypeDescriptor> ArrayLength::evaluate(SymTab &symTab) { 
+std::unique_ptr<TypeDescriptor> ArrayLength::evaluate(SymTab &symTab) {
 
     TypeDescriptor* rawPtr = symTab.getValueFor(_id);
 
