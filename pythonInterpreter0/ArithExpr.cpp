@@ -333,10 +333,10 @@ FunctionCall::FunctionCall(std::shared_ptr<Token> functionName, std::unique_ptr<
 std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
 
     // std::cout << "Evaluate Function Call " << std::endl;
-    
+
     //I prefer this variable to be typed
     std::shared_ptr<FunctionDefinition> functionPointer = symTab.getFunction(_functionName);
-    
+
     auto vect = functionPointer->getParamList();
     int numParams = vect.size();
 
@@ -357,8 +357,12 @@ std::unique_ptr<TypeDescriptor> FunctionCall::evaluate(SymTab &symTab) {
 
 
     functionPointer->evaluate(symTab);
-    // return retVal;
-    return Descriptor::Int::createIntDescriptor(1);
+    if(symTab.getReturnValue() != nullptr) {
+      auto returnResults = symTab.getReturnValue();
+      return Descriptor::copyReferencePtr(returnResults.get());
+    }
+
+    return Descriptor::String::createStringDescriptor("None");  // No return value
 }
 
 void FunctionCall::dumpAST(std::string indent) {
@@ -398,7 +402,7 @@ std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
 // START ArraySubscription
 ArraySubscription::ArraySubscription(
     std::shared_ptr<Token> tk,
-    std::string id, 
+    std::string id,
     std::unique_ptr<ExprNode> test):
     ExprNode{tk},
     _id{id},

@@ -46,7 +46,7 @@ public:
 };
 
 class FunctionStatements {
-public: 
+public:
     FunctionStatements() = default;
     ~FunctionStatements() = default;
 
@@ -56,7 +56,7 @@ public:
 
     void setReturnExpression(std::unique_ptr<ExprNode>);
     /*std::optional<
-        std::unique_ptr<TypeDescriptor> 
+        std::unique_ptr<TypeDescriptor>
     >*/std::unique_ptr<TypeDescriptor> getReturnValue();
 
     void setReturnStatement(std::unique_ptr<ReturnStatement> returnStmt) {
@@ -164,9 +164,9 @@ private:
 
     std::unique_ptr<FunctionStatements> _funcSuite;
     std::vector<std::string> _paramList;
-
     std::string _funcName;
     bool _hasBeenAddedToSymTab;
+    bool _hasReturnValue;
 };
 
 class ReturnStatement : public Statement {
@@ -174,6 +174,8 @@ public:
     ReturnStatement(std::unique_ptr<ExprNode>);
     virtual ~ReturnStatement() = default;
     virtual void evaluate(SymTab &symTab);
+    //have a function that returns returnnode evaluationg
+    //std::unique_ptr<ExprNode> returnNode()
     virtual void dumpAST(std::string);
 private:
   std::unique_ptr<ExprNode> _returnNode;
