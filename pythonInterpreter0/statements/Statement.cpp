@@ -615,10 +615,8 @@ void ArrayOperation::evaluate(SymTab &symTab){
     }
     
     if ( _keyword == "pop" && arrayDescriptor != nullptr ) {
-
-
+        descriptorLHS->pop();
     }
-
 }
 //END ArrayOperation
 
