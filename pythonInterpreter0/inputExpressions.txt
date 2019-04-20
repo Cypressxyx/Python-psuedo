@@ -1,7 +1,5 @@
+def foo():
+  return 2
 
-arrayName = [1, 2, 3, 4]
-
-print arrayName[2]
-
-print len(arrayName)
-
+x = foo()
+print x

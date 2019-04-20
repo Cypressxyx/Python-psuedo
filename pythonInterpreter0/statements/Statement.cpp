@@ -8,6 +8,40 @@
 // START "STATEMENT"
 Statement::Statement() {}
 // END "STATEMENT"
+inline std::shared_ptr<TypeDescriptor> copyPtr(TypeDescriptor *ref) {
+
+    if (ref->type() == TypeDescriptor::INTEGER) {
+        auto desc = std::make_shared<NumberDescriptor>(TypeDescriptor::INTEGER);
+        desc->_value.intValue = dynamic_cast<NumberDescriptor *>(ref)->_value.intValue; //risky
+
+        return desc;
+
+    } else if (ref->type() == TypeDescriptor::DOUBLE) {
+        auto desc = std::make_shared<NumberDescriptor>(TypeDescriptor::DOUBLE);
+        desc->_value.doubleValue = dynamic_cast<NumberDescriptor *>(ref)->_value.doubleValue;
+
+        return desc;
+
+    } else if (ref->type() == TypeDescriptor::BOOL) {
+        auto desc = std::make_shared<NumberDescriptor>(TypeDescriptor::BOOL);
+        desc->_value.boolValue = dynamic_cast<NumberDescriptor *>(ref)->_value.boolValue;
+
+        return desc;
+
+    } else if (ref->type() == TypeDescriptor::STRING) {
+        auto desc = std::make_shared<StringDescriptor>(TypeDescriptor::STRING);
+        desc->_stringValue = dynamic_cast<StringDescriptor *>(ref)->_stringValue;
+
+        return desc;
+
+    } else {
+        std::cout << "Error in copyReferencePtr...ref type is " << ref->type() << std::endl;
+        exit(1);
+        // Silence Warnings
+        return nullptr;
+    }
+}
+
 
 
 AssignStmt::AssignStmt(std::string lhsVar, std::unique_ptr<ExprNode> rhsExpr):
@@ -29,13 +63,13 @@ void AssignStmt::evaluate(SymTab &symTab) {
         std::cout << "void AssignStmt::evaluate(SymTab &symTab)" << std::endl;
 
     auto rhs = _rhsExpression->evaluate(symTab);
-    
+
     if (debug) {
         std::cout << "Asssign Evaluate: LHS = " << _lhsVariable << "\t";
         Descriptor::printValue(rhs.get());
         std::cout << std::endl;
     }
-    
+
     symTab.setValueFor(_lhsVariable, std::move(rhs));
 }
 
@@ -274,7 +308,8 @@ FunctionDefinition::FunctionDefinition(
     _funcName{funcName},
     _paramList{paramList},
     _funcSuite{std::move(funcSuite)},
-    _hasBeenAddedToSymTab{hasBeenAddedToSymTab}
+    _hasBeenAddedToSymTab{hasBeenAddedToSymTab},
+    _hasReturnValue{false}
 {}
 
 void FunctionDefinition::evaluate(SymTab &symTab) {
@@ -285,6 +320,9 @@ void FunctionDefinition::evaluate(SymTab &symTab) {
     }
 
     _funcSuite->evaluate(symTab);
+    //if _funcsuit has a return value, evaluate that
+    // and set hasreturn to true and
+    // set a node to point to that return valu  e
     // _SUITE_NOT_FUNC_SUITE_FIX->evaluate(symTab);
 }
 
@@ -309,7 +347,9 @@ ReturnStatement::ReturnStatement(std::unique_ptr<ExprNode> returnNode):
 {}
 
 void ReturnStatement::evaluate(SymTab &symTab) {
-    _returnNode->evaluate(symTab);
+    //std::shared_ptr value = (_returnNode->evaluate(symTab)).get();
+    auto returnResults = copyPtr(_returnNode->evaluate(symTab).get());
+    symTab.setReturnValue(returnResults);
 }
 
 void ReturnStatement::dumpAST(std::string spaces) {
@@ -380,8 +420,12 @@ void FunctionStatements::evaluate(SymTab &symTab) {
 
     for_each(_statements.begin(), _statements.end(), [&](auto &stmt) { stmt->evaluate(symTab); });
 
-    if ( _returnExpression ) {
-        _returnValue = _returnExpression->evaluate(symTab);
+    if ( _returnStatement ) {
+
+        _returnStatement->evaluate(symTab);
+        //_returnStatement = _returnExpression->evaluate(symTab);
+        //_returnValue = _returnExpression->evaluate(symTab);
+        // return value getReturnValue();
     }
 
 }
@@ -395,6 +439,8 @@ void FunctionStatements::dumpAST(std::string spaces) {
 }
 
 void FunctionStatements::setReturnExpression(std::unique_ptr<ExprNode> retVal) {
+
+    std::cout << "helo\n";
     _returnExpression = std::move(retVal);
 }
 
@@ -530,8 +576,8 @@ void ElseStmt::dumpAST(std::string spaces) {
 
 //START ArrayOperation
 ArrayOperation::ArrayOperation(
-    std::string id, 
-    std::string keyword, 
+    std::string id,
+    std::string keyword,
     std::unique_ptr<ExprNode> test):
     _id{id},
     _keyword{keyword},
