@@ -1,7 +1,11 @@
-arr = [6, 2, 3, 4, 5]
 
-arr.pop(3)
+def nacci(arg1):
 
-print arr
-print len(arr) 
+    arr = [0, 1]
+    
+    for i in range(2, arg1):
+        arr.append( arr[i - 1] + arr[i - 2] )
 
+    print arr 
+
+nacci(30)
