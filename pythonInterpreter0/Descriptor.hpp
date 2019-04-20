@@ -54,7 +54,7 @@ public:
 class TypeDescriptor {
 
 public:
-    enum types { INTEGER, DOUBLE, BOOL, STRING, ARRAY_INT, ARRAY_DOUBLE, ARRAY_BOOL, ARRAY_STRING };
+    enum types { INTEGER, DOUBLE, BOOL, STRING, ARRAY_INT, ARRAY_DOUBLE, ARRAY_BOOL, ARRAY_STRING, NOTY_ARRAY };
     TypeDescriptor(types type):
         _type{type}
     {}
@@ -114,6 +114,15 @@ public:
             std::cout << "~ArrayDescriptor" << std::endl;
     }
 
+    void setInitialized() { initialized = true; }
+
+    void addItem(int i) { _integerArray.addItem(i); }
+    void addItem(double d) { _doubleArray.addItem(d); }
+    void addItem(bool b) { _doubleArray.addItem(b); }
+    void addItem(const char *s) { addItem(std::string(s)); }
+    void addItem(std::string s) { _stringArray.addItem(s); }
+
+    bool initialized{false};
     //lawl
     IntArray     _integerArray;
     StringArray  _stringArray;

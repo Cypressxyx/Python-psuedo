@@ -395,7 +395,61 @@ void ArrayInit::dumpAST(std::string spaces) {
 void ArrayInit::print() {}
 
 std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
-    return nullptr;
+    
+    if ( _testList->size() == 0 ) 
+        return std::make_unique<ArrayDescriptor>(TypeDescriptor::NOTY_ARRAY);
+
+    auto tyDescriptor = _testList->at(0)->evaluate(symTab);
+
+    std::unique_ptr<ArrayDescriptor> retDescriptor = nullptr;
+    int i = 0;
+
+    if ( tyDescriptor->type() == TypeDescriptor::INTEGER ) {
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::INTEGER);
+        retDescriptor->addItem(Descriptor::Int::getIntValue(tyDescriptor.get()));
+
+        for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
+            if (i != 0) 
+                retDescriptor->addItem(Descriptor::Int::getIntValue(tl->evaluate(symTab).get()));
+            i += 1;
+        });
+    }
+    else if ( tyDescriptor->type() == TypeDescriptor::DOUBLE ) {
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::DOUBLE);
+        retDescriptor->addItem(Descriptor::Double::getDoubleValue(tyDescriptor.get()));
+
+        for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
+            if (i != 0) 
+                retDescriptor->addItem(Descriptor::Double::getDoubleValue(tl->evaluate(symTab).get()));
+            i += 1;
+        });
+    }
+    else if ( tyDescriptor->type() == TypeDescriptor::BOOL ) {
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::BOOL);
+        retDescriptor->addItem(Descriptor::Bool::getBoolValue(tyDescriptor.get()));
+        for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
+            if (i != 0) 
+                retDescriptor->addItem(Descriptor::Bool::getBoolValue(tl->evaluate(symTab).get()));
+            i += 1;
+        });
+    }
+    else if ( tyDescriptor->type() == TypeDescriptor::STRING ) {
+        retDescriptor = std::make_unique<ArrayDescriptor>(TypeDescriptor::STRING);
+        retDescriptor->addItem(Descriptor::String::getStringValue(tyDescriptor.get()));
+        for_each(_testList->begin(), _testList->end(), [&](auto &tl) {
+            if (i != 0) 
+                retDescriptor->addItem(Descriptor::String::getStringValue(tl->evaluate(symTab).get()));
+            i += 1;
+        });
+    }
+    else {
+        std::cout << "ArrayInitEvaluate - Unsupported Type: " << tyDescriptor->type() << std::endl;
+        exit(1);
+    }
+
+
+
+    return tyDescriptor;
 }
 //END ArrayInit
 
