@@ -16,7 +16,7 @@ class BaseArrayClass {
     _vector.reserve(100);
   }
 
-  void printItem() {
+  void printItems() {
     for (auto &item: _vector) {
       std::cout << item << std::endl;
     }
@@ -54,7 +54,7 @@ public:
 class TypeDescriptor {
 
 public:
-    enum types { INTEGER, DOUBLE, BOOL, STRING, ARRAY_INT, ARRAY_DOUBLE, ARRAY_BOOL, ARRAY_STRING };
+    enum types { INTEGER, DOUBLE, BOOL, STRING, ARRAY_INT, ARRAY_DOUBLE, ARRAY_BOOL, ARRAY_STRING, NOTY_ARRAY };
     TypeDescriptor(types type):
         _type{type}
     {}
@@ -114,6 +114,28 @@ public:
             std::cout << "~ArrayDescriptor" << std::endl;
     }
 
+    void print() {
+
+        if ( type() ==  ARRAY_INT) 
+            _integerArray.printItems();
+        else if ( type() == ARRAY_DOUBLE)
+            _doubleArray.printItems();
+        else if ( type() == ARRAY_BOOL)
+            _doubleArray.printItems();
+        else if ( type() == ARRAY_STRING)
+            _stringArray.printItems();
+
+    }
+
+    void setInitialized() { initialized = true; }
+
+    void addItem(int i) { _integerArray.addItem(i); }
+    void addItem(double d) { _doubleArray.addItem(d); }
+    void addItem(bool b) { _doubleArray.addItem(b); }
+    void addItem(const char *s) { addItem(std::string(s)); }
+    void addItem(std::string s) { _stringArray.addItem(s); }
+
+    bool initialized{false};
     //lawl
     IntArray     _integerArray;
     StringArray  _stringArray;
