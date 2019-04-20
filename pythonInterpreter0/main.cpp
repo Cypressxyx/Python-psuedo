@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
     Parser parser(lex);
     auto stmts = parser.file_input();
-   stmts->dumpAST("");
+//   stmts->dumpAST("");
     //std::cout << std::endl << std::endl;
     stmts->evaluate(symTab);
     // std::cout << "Evaluate Done - Dumping Tree" << std::endl;

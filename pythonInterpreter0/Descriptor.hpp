@@ -17,7 +17,6 @@ class BaseArrayClass {
   }
 
   void printItems() {
-      std::cout << "inside print items" << std::endl;
     for (auto &item: _vector) {
       std::cout << item << std::endl;
     }

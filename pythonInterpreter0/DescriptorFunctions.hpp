@@ -247,12 +247,12 @@ namespace Descriptor {
 
     inline void printValue(TypeDescriptor *desc) {
 
-        std::cout << "printValue" << std::endl;
+        // std::cout << "printValue" << std::endl;
 
         if ( desc->type() == TypeDescriptor::INTEGER
         ||   desc->type() == TypeDescriptor::DOUBLE
         ||   desc->type() == TypeDescriptor::BOOL ) {
-            std::cout <<"int / double / bool" << std::endl;
+            // std::cout <<"int / double / bool" << std::endl;
             NumberDescriptor *nDesc = dynamic_cast<NumberDescriptor *>(desc);
             if( nDesc->type() == TypeDescriptor::INTEGER )
                 std::cout << nDesc->_value.intValue;
@@ -266,7 +266,7 @@ namespace Descriptor {
             return;
         }
         else if ( desc->type() == TypeDescriptor::STRING ) {
-            std::cout << "Stringtype" << std::endl;
+            // std::cout << "Stringtype" << std::endl;
             StringDescriptor *sDesc = dynamic_cast<StringDescriptor *>(desc);
             if ( sDesc != nullptr ) {
                 std::cout << sDesc->_stringValue;
@@ -279,7 +279,7 @@ namespace Descriptor {
         ||  desc->type() == TypeDescriptor::ARRAY_BOOL
         ||  desc->type() == TypeDescriptor::ARRAY_STRING) { 
 
-            std::cout << "At array" << std::endl;
+            // std::cout << "At array" << std::endl;
             ArrayDescriptor *aDesc = dynamic_cast<ArrayDescriptor *>(desc);
             if ( aDesc != nullptr ) {
                 aDesc->print();
@@ -291,8 +291,6 @@ namespace Descriptor {
     }
 
     inline std::unique_ptr<TypeDescriptor> copyReferencePtr(TypeDescriptor *ref) {
-
-        std::cout << "copyReferencePtr called: " << ref->type() << std::endl;
 
         if (ref->type() == TypeDescriptor::INTEGER) {
             auto desc = std::make_unique<NumberDescriptor>(TypeDescriptor::INTEGER);
@@ -327,7 +325,7 @@ namespace Descriptor {
             desc->_doubleArray = casted->_doubleArray;
             desc->_boolArray = casted->_boolArray;
             return desc;
-            
+
         } else {
             std::cout << "Error in copyReferencePtr...ref type is " << ref->type() << std::endl;
             exit(1);
