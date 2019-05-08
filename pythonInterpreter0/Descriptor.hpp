@@ -133,6 +133,9 @@ public:
             _doubleArray.printItems();
         else if ( type() == ARRAY_STRING)
             _stringArray.printItems();
+        // else if ( type() == NOTY_ARRAY ) {
+
+        // }
 
     }
 

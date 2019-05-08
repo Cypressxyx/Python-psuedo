@@ -387,16 +387,19 @@ ArrayInit::ArrayInit(
 
 void ArrayInit::dumpAST(std::string spaces) {
     std::cout << spaces << "ArrayInit: " << this << std::endl;
-    for_each(_testList->begin(), _testList->end(), [spaces](auto &test){
-        test->dumpAST(spaces + "\t");
-    });
+
+    if ( _testList != nullptr ) {
+        for_each(_testList->begin(), _testList->end(), [spaces](auto &test){
+            test->dumpAST(spaces + "\t");
+        });
+    }
 }
 
 void ArrayInit::print() {}
 
 std::unique_ptr<TypeDescriptor> ArrayInit::evaluate(SymTab &symTab){
 
-    if ( _testList->size() == 0 )
+    if ( _testList == nullptr )
         return std::make_unique<ArrayDescriptor>(TypeDescriptor::NOTY_ARRAY);
 
     auto tyDescriptor = _testList->at(0)->evaluate(symTab);

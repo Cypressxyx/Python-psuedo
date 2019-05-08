@@ -317,7 +317,8 @@ namespace Descriptor {
             return desc;
 
         } else if (ref->type() == TypeDescriptor::ARRAY_INT || ref->type() == TypeDescriptor::ARRAY_DOUBLE ||
-                   ref->type() == TypeDescriptor::ARRAY_BOOL || ref->type() == TypeDescriptor::ARRAY_STRING) {
+                   ref->type() == TypeDescriptor::ARRAY_BOOL || ref->type() == TypeDescriptor::ARRAY_STRING ||
+                   ref->type() == TypeDescriptor::NOTY_ARRAY) {
             auto desc = std::make_unique<ArrayDescriptor>(ref->type());
             auto casted = dynamic_cast<ArrayDescriptor *>(ref);
             desc->_integerArray = casted->_integerArray;

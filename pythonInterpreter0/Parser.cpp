@@ -864,8 +864,7 @@ std::unique_ptr<ExprNode> Parser::array_init() {
 
     tok = lexer.getToken();
 
-
-    if ( tok->isCloseBracket() ) {
+    if ( tok->isCloseSquareBracket() ) {
         //return empty array init
         return std::make_unique<ArrayInit>(
             std::make_shared<Token>(),

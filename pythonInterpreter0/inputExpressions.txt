@@ -1,11 +1,7 @@
 
-def nacci(arg1):
+a = []
+a.append("a")
+a.append("b")
+a.append("c")
 
-    arr = [0, 1]
-    
-    for i in range(2, arg1):
-        arr.append( arr[i - 1] + arr[i - 2] )
-
-    print arr 
-
-nacci(30)
+print a

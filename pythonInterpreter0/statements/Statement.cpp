@@ -610,6 +610,19 @@ void ArrayOperation::evaluate(SymTab &symTab){
         } else {
             std::cout << "Error ArrayOperation::Evaluate" << std::endl;
         }
+
+    // #hotfixinit
+        if ( arrayRef->type() == TypeDescriptor::NOTY_ARRAY ) {
+            if ( descriptorLHS->type() == TypeDescriptor::INTEGER ) {
+                arrayRef->type() = TypeDescriptor::ARRAY_INT;
+            } else if ( descriptorLHS->type() == TypeDescriptor::DOUBLE ) {
+                arrayRef->type() = TypeDescriptor::ARRAY_DOUBLE;
+            } else if ( descriptorLHS->type() == TypeDescriptor::BOOL ) {
+                arrayRef->type() = TypeDescriptor::ARRAY_BOOL;
+            } else if ( descriptorLHS->type() == TypeDescriptor::STRING ) {
+                arrayRef->type() = TypeDescriptor::ARRAY_STRING;
+            }
+        }
         return;
 
     }
