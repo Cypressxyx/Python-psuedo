@@ -142,7 +142,7 @@ namespace Descriptor {
         inline NumberDescriptor *dieIfNotBool(TypeDescriptor *t) {
 
             if ( t->type() != TypeDescriptor::BOOL ) {
-                std::cout << "Fatal Error Descriptor::Int::dieIfNotBool" << std::endl;
+                std::cout << "Fatal Error Descriptor::Bool::dieIfNotBool" << std::endl;
                 exit(1);
             }
 
