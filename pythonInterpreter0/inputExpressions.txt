@@ -1,7 +1,7 @@
-arr = [6, 2, 3, 4, 5]
 
-arr.pop(3)
+a = []
+a.append("a")
+a.append("b")
+a.append("c")
 
-print arr
-print len(arr) 
-
+print a

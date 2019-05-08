@@ -83,9 +83,12 @@ std::unique_ptr<Statement> Parser::simple_stmt() {
 
     } 
     else if ( tok->isReturn() ) {
-        // std::unique_ptr<ReturnStatement> retStmt = return_stmt();
-        // getEOF(scope);
-        // return retStmt;
+        lexer.ungetToken();
+        std::unique_ptr<ReturnStatement> retStmt = return_stmt();
+
+        // return_stmt() eats the EOL
+        // getEOL(scope);
+        return retStmt;
     }
     else if ( tok->isName() ) {
 
@@ -864,8 +867,7 @@ std::unique_ptr<ExprNode> Parser::array_init() {
 
     tok = lexer.getToken();
 
-
-    if ( tok->isCloseBracket() ) {
+    if ( tok->isCloseSquareBracket() ) {
         //return empty array init
         return std::make_unique<ArrayInit>(
             std::make_shared<Token>(),
